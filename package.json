@@ -5,7 +5,7 @@
   "type": "module",
   "description": "Independent Telegraph Intelligence Reliability Evaluator — claim-level scoring against authoritative references.",
   "scripts": {
-    "test": "node --test test/evaluator.test.js test/heldout.test.js test/adapter.test.js test/payment/x402.test.js test/payment/handler.test.js test/payment/gas.test.js",
+    "test": "node --test test/evaluator.test.js test/cli.test.js test/heldout.test.js test/adapter.test.js test/payment/x402.test.js test/payment/handler.test.js test/payment/gas.test.js",
     "test:heldout": "node --test test/heldout.test.js",
     "test:live": "node --test test/live/discovery.test.js",
     "test:all": "npm test && npm run test:live",
