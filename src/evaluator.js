@@ -99,6 +99,8 @@ export function scoreCase(benchmark, response, evaluatedAt = new Date()) {
       evidence: 0,
       freshness: 0,
       overall: 0,
+      unsupportedClaimKeys: [],
+      unsupportedClaimCount: 0,
       claimResults: (benchmark.claims || []).map((c) => ({
         key: c.key,
         expected: c.expected,
@@ -112,6 +114,8 @@ export function scoreCase(benchmark, response, evaluatedAt = new Date()) {
   const claims = benchmark.claims ?? [];
   const returned = response.claims ?? response.result ?? {};
   const evidenceByClaim = response.evidence ?? {};
+  const expectedKeys = new Set(claims.map((claim) => claim.key));
+  const unsupportedClaimKeys = Object.keys(returned).filter((key) => !expectedKeys.has(key)).sort();
   const maxAge = benchmark.maxEvidenceAgeHours ?? response.maxEvidenceAgeHours ?? 168;
   const providerVerifiedIgnored = Boolean(response.verified || response.providerVerified);
 
@@ -189,7 +193,12 @@ export function scoreCase(benchmark, response, evaluatedAt = new Date()) {
     overall,
     claimResults,
     providerVerifiedIgnored,
-    failureCodes: claimResults.map((c) => c.failureCode),
+    unsupportedClaimKeys,
+    unsupportedClaimCount: unsupportedClaimKeys.length,
+    failureCodes: [
+      ...claimResults.map((c) => c.failureCode),
+      ...(unsupportedClaimKeys.length ? [FailureCode.UNSUPPORTED_CLAIM] : []),
+    ],
     latencyMs: nonNegative(response.latencyMs),
     costUsd: nonNegative(response.costUsd),
     responseHash: response.responseHash || null,
@@ -221,6 +230,8 @@ export function evaluateRun(run, evaluatedAt = new Date()) {
       evidence: avg('evidence'),
       freshness: avg('freshness'),
       overall: avg('overall'),
+      unsupportedClaimCount: active.reduce((sum, score) => sum + (score.unsupportedClaimCount || 0), 0),
+      unsupportedClaimKeys: [...new Set(active.flatMap((score) => score.unsupportedClaimKeys || []))].sort(),
       totalCostUsd: active.reduce((a, s) => a + (s.costUsd || 0), 0),
       avgLatencyMs: (() => {
         const xs = active.map((s) => s.latencyMs).filter((x) => x != null);
@@ -228,7 +239,7 @@ export function evaluateRun(run, evaluatedAt = new Date()) {
       })(),
       measuredOnly: true,
       reliabilityClaim: null,
-      note: 'Overall is a weighted blend of measured dimensions. It is not a generalized reliability certification.',
+      note: 'Overall is a weighted blend of measured dimensions. Unsupported extra claim keys are reported separately and are not folded into the weighted score.',
     };
   });
 
@@ -250,6 +261,7 @@ export function evaluateRun(run, evaluatedAt = new Date()) {
       completeness: p.completeness,
       evidence: p.evidence,
       freshness: p.freshness,
+      unsupportedClaimCount: p.unsupportedClaimCount,
       totalCostUsd: p.totalCostUsd,
       avgLatencyMs: p.avgLatencyMs,
       disclaimer: 'Rank reflects this run only. Not a production reliability certification.',
