@@ -84,6 +84,20 @@ test('evaluateRun ranks by overall and excludes synthetic', () => {
   assert.match(out.leaderboard[0].disclaimer, /not a production reliability/i);
 });
 
+test('synthetic-only runs do not produce a misleading zero-score leaderboard', () => {
+  const run = {
+    id: 'synthetic-only',
+    benchmarks: [{ id: 'syn', kind: 'synthetic_fixture', claims: [{ key: 'x', expected: 1 }] }],
+    providers: [{ id: 'demo', responses: { syn: { claims: { x: 1 } } } }],
+  };
+  const out = evaluateRun(run, new Date('2026-11-27T12:00:00Z'));
+  assert.equal(out.realCaseCount, 0);
+  assert.equal(out.syntheticExcluded, 1);
+  assert.equal(out.providers[0].measuredCaseCount, 0);
+  assert.equal(out.providers[0].overall, null);
+  assert.deepEqual(out.leaderboard, []);
+});
+
 test('evaluateRun rejects missing id', () => {
   assert.throws(() => evaluateRun({ benchmarks: [bench], providers: [] }), /missing benchmark run id/);
 });
