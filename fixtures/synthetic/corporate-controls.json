@@ -1,0 +1,27 @@
+{
+  "id": "corporate-registry-synthetic-controls",
+  "intent": "CORPORATE_REGISTRY_LOOKUP_GENERAL",
+  "title": "Synthetic controls — excluded from published real scores",
+  "note": "For regression only. kind values start with synthetic_.",
+  "cases": [
+    {
+      "id": "syn-missing-99999999",
+      "kind": "synthetic_negative_control",
+      "params": { "company": "99999999", "jurisdiction": "GB" },
+      "claims": [
+        { "key": "active", "expected": false, "rule": "exact" },
+        { "key": "status", "expected": "not_found", "rule": "case_insensitive" }
+      ],
+      "reference": { "synthetic": true, "sourceName": "Synthetic negative control" }
+    },
+    {
+      "id": "syn-conflict-00000000",
+      "kind": "synthetic_conflict_control",
+      "params": { "company": "00000000", "jurisdiction": "GB" },
+      "claims": [
+        { "key": "conflict_detected", "expected": true, "rule": "exact" }
+      ],
+      "reference": { "synthetic": true, "sourceName": "Synthetic conflict fixture" }
+    }
+  ]
+}

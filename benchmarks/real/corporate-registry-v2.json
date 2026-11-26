@@ -1,0 +1,171 @@
+{
+  "id": "corporate-registry-real-v2",
+  "intent": "CORPORATE_REGISTRY_LOOKUP_GENERAL",
+  "title": "Independent corporate registry references (real only)",
+  "version": "2.0.0",
+  "note": "All rows are independently sourced. Synthetic controls live under fixtures/synthetic and must not be mixed into published real scores.",
+  "cases": [
+    {
+      "id": "ch-openai-uk-14367667",
+      "kind": "real_reference",
+      "jurisdiction": "GB",
+      "params": { "company": "14367667", "jurisdiction": "GB" },
+      "claims": [
+        { "key": "legal_name", "expected": "OPENAI UK LTD", "rule": "case_insensitive" },
+        { "key": "registration_id", "expected": "14367667", "rule": "exact" },
+        { "key": "jurisdiction", "expected": "GB", "rule": "exact" },
+        { "key": "active", "expected": true, "rule": "exact" },
+        { "key": "status", "expected": "active", "rule": "case_insensitive" }
+      ],
+      "reference": {
+        "sourceName": "Companies House",
+        "sourceUrl": "https://find-and-update.company-information.service.gov.uk/company/14367667",
+        "retrievedAt": "2026-11-26T20:20:00.000Z",
+        "independentlyReviewed": true,
+        "synthetic": false
+      }
+    },
+    {
+      "id": "ch-deepmind-07386350",
+      "kind": "real_reference",
+      "jurisdiction": "GB",
+      "params": { "company": "07386350", "jurisdiction": "GB" },
+      "claims": [
+        { "key": "legal_name", "expected": "DEEPMIND TECHNOLOGIES LIMITED", "rule": "case_insensitive" },
+        { "key": "registration_id", "expected": "07386350", "rule": "exact" },
+        { "key": "jurisdiction", "expected": "GB", "rule": "exact" },
+        { "key": "active", "expected": true, "rule": "exact" },
+        { "key": "status", "expected": "active", "rule": "case_insensitive" }
+      ],
+      "reference": {
+        "sourceName": "Companies House",
+        "sourceUrl": "https://find-and-update.company-information.service.gov.uk/company/07386350",
+        "retrievedAt": "2026-11-26T20:20:00.000Z",
+        "independentlyReviewed": true,
+        "synthetic": false
+      }
+    },
+    {
+      "id": "ch-bbc-commercial-04463534",
+      "kind": "real_reference",
+      "jurisdiction": "GB",
+      "params": { "company": "04463534", "jurisdiction": "GB" },
+      "claims": [
+        { "key": "legal_name", "expected": "BBC COMMERCIAL LIMITED", "rule": "case_insensitive" },
+        { "key": "registration_id", "expected": "04463534", "rule": "exact" },
+        { "key": "jurisdiction", "expected": "GB", "rule": "exact" },
+        { "key": "active", "expected": true, "rule": "exact" },
+        { "key": "status", "expected": "active", "rule": "case_insensitive" }
+      ],
+      "reference": {
+        "sourceName": "Companies House",
+        "sourceUrl": "https://find-and-update.company-information.service.gov.uk/company/04463534",
+        "retrievedAt": "2026-11-26T20:20:00.000Z",
+        "independentlyReviewed": true,
+        "synthetic": false
+      }
+    },
+    {
+      "id": "ch-dissolved-03877937",
+      "kind": "real_reference",
+      "jurisdiction": "GB",
+      "params": { "company": "03877937", "jurisdiction": "GB" },
+      "claims": [
+        { "key": "legal_name", "expected": "THE PULVER CARR PARTNERSHIP LIMITED", "rule": "case_insensitive" },
+        { "key": "registration_id", "expected": "03877937", "rule": "exact" },
+        { "key": "jurisdiction", "expected": "GB", "rule": "exact" },
+        { "key": "active", "expected": false, "rule": "exact" },
+        { "key": "status", "expected": "dissolved", "rule": "case_insensitive" }
+      ],
+      "reference": {
+        "sourceName": "Companies House",
+        "sourceUrl": "https://find-and-update.company-information.service.gov.uk/company/03877937",
+        "retrievedAt": "2026-11-26T20:20:00.000Z",
+        "independentlyReviewed": true,
+        "synthetic": false
+      }
+    },
+    {
+      "id": "ch-arm-02587607",
+      "kind": "real_reference",
+      "jurisdiction": "GB",
+      "params": { "company": "02587607", "jurisdiction": "GB" },
+      "claims": [
+        { "key": "legal_name", "expected": "ARM LIMITED", "rule": "case_insensitive" },
+        { "key": "registration_id", "expected": "02587607", "rule": "exact" },
+        { "key": "jurisdiction", "expected": "GB", "rule": "exact" },
+        { "key": "active", "expected": true, "rule": "exact" },
+        { "key": "status", "expected": "active", "rule": "case_insensitive" }
+      ],
+      "reference": {
+        "sourceName": "Companies House",
+        "sourceUrl": "https://find-and-update.company-information.service.gov.uk/company/02587607",
+        "retrievedAt": "2026-11-26T21:00:00.000Z",
+        "independentlyReviewed": true,
+        "synthetic": false
+      }
+    },
+    {
+      "id": "ch-revolut-08804411",
+      "kind": "real_reference",
+      "jurisdiction": "GB",
+      "params": { "company": "08804411", "jurisdiction": "GB" },
+      "claims": [
+        { "key": "legal_name", "expected": "REVOLUT LTD", "rule": "case_insensitive" },
+        { "key": "registration_id", "expected": "08804411", "rule": "exact" },
+        { "key": "jurisdiction", "expected": "GB", "rule": "exact" },
+        { "key": "active", "expected": true, "rule": "exact" },
+        { "key": "status", "expected": "active", "rule": "case_insensitive" }
+      ],
+      "reference": {
+        "sourceName": "Companies House",
+        "sourceUrl": "https://find-and-update.company-information.service.gov.uk/company/08804411",
+        "retrievedAt": "2026-11-26T21:00:00.000Z",
+        "independentlyReviewed": true,
+        "synthetic": false
+      }
+    },
+    {
+      "id": "sec-apple-0000320193",
+      "kind": "real_reference",
+      "jurisdiction": "US",
+      "params": { "company": "0000320193", "jurisdiction": "US" },
+      "claims": [
+        { "key": "legal_name", "expected": "Apple Inc.", "rule": "case_insensitive" },
+        { "key": "registration_id", "expected": "0000320193", "rule": "exact" },
+        { "key": "jurisdiction", "expected": "US", "rule": "exact" },
+        { "key": "active", "expected": true, "rule": "exact" }
+      ],
+      "reference": {
+        "sourceName": "SEC EDGAR",
+        "sourceUrl": "https://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=0000320193",
+        "retrievedAt": "2026-11-26T21:00:00.000Z",
+        "independentlyReviewed": true,
+        "synthetic": false,
+        "cik": "0000320193",
+        "ticker": "AAPL"
+      }
+    },
+    {
+      "id": "sec-microsoft-0000789019",
+      "kind": "real_reference",
+      "jurisdiction": "US",
+      "params": { "company": "0000789019", "jurisdiction": "US" },
+      "claims": [
+        { "key": "legal_name", "expected": "MICROSOFT CORP", "rule": "case_insensitive" },
+        { "key": "registration_id", "expected": "0000789019", "rule": "exact" },
+        { "key": "jurisdiction", "expected": "US", "rule": "exact" },
+        { "key": "active", "expected": true, "rule": "exact" }
+      ],
+      "reference": {
+        "sourceName": "SEC EDGAR",
+        "sourceUrl": "https://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=0000789019",
+        "retrievedAt": "2026-11-26T21:00:00.000Z",
+        "independentlyReviewed": true,
+        "synthetic": false,
+        "cik": "0000789019",
+        "ticker": "MSFT"
+      }
+    }
+  ]
+}
