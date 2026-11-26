@@ -1,21 +1,44 @@
 {
   "id": "corporate-registry-real-v2",
   "intent": "CORPORATE_REGISTRY_LOOKUP_GENERAL",
-  "title": "Independent corporate registry references (real only)",
-  "version": "2.0.0",
-  "note": "All rows are independently sourced. Synthetic controls live under fixtures/synthetic and must not be mixed into published real scores.",
+  "title": "Expanded independent corporate registry references (real only)",
+  "version": "2.1.0",
+  "note": "All rows are independently sourced from official Companies House or SEC EDGAR entity pages. Synthetic controls live under fixtures/synthetic and must not be mixed into published real scores.",
   "cases": [
     {
       "id": "ch-openai-uk-14367667",
       "kind": "real_reference",
       "jurisdiction": "GB",
-      "params": { "company": "14367667", "jurisdiction": "GB" },
+      "params": {
+        "company": "14367667",
+        "jurisdiction": "GB"
+      },
       "claims": [
-        { "key": "legal_name", "expected": "OPENAI UK LTD", "rule": "case_insensitive" },
-        { "key": "registration_id", "expected": "14367667", "rule": "exact" },
-        { "key": "jurisdiction", "expected": "GB", "rule": "exact" },
-        { "key": "active", "expected": true, "rule": "exact" },
-        { "key": "status", "expected": "active", "rule": "case_insensitive" }
+        {
+          "key": "legal_name",
+          "expected": "OPENAI UK LTD",
+          "rule": "case_insensitive"
+        },
+        {
+          "key": "registration_id",
+          "expected": "14367667",
+          "rule": "exact"
+        },
+        {
+          "key": "jurisdiction",
+          "expected": "GB",
+          "rule": "exact"
+        },
+        {
+          "key": "active",
+          "expected": true,
+          "rule": "exact"
+        },
+        {
+          "key": "status",
+          "expected": "active",
+          "rule": "case_insensitive"
+        }
       ],
       "reference": {
         "sourceName": "Companies House",
@@ -29,13 +52,36 @@
       "id": "ch-deepmind-07386350",
       "kind": "real_reference",
       "jurisdiction": "GB",
-      "params": { "company": "07386350", "jurisdiction": "GB" },
+      "params": {
+        "company": "07386350",
+        "jurisdiction": "GB"
+      },
       "claims": [
-        { "key": "legal_name", "expected": "DEEPMIND TECHNOLOGIES LIMITED", "rule": "case_insensitive" },
-        { "key": "registration_id", "expected": "07386350", "rule": "exact" },
-        { "key": "jurisdiction", "expected": "GB", "rule": "exact" },
-        { "key": "active", "expected": true, "rule": "exact" },
-        { "key": "status", "expected": "active", "rule": "case_insensitive" }
+        {
+          "key": "legal_name",
+          "expected": "DEEPMIND TECHNOLOGIES LIMITED",
+          "rule": "case_insensitive"
+        },
+        {
+          "key": "registration_id",
+          "expected": "07386350",
+          "rule": "exact"
+        },
+        {
+          "key": "jurisdiction",
+          "expected": "GB",
+          "rule": "exact"
+        },
+        {
+          "key": "active",
+          "expected": true,
+          "rule": "exact"
+        },
+        {
+          "key": "status",
+          "expected": "active",
+          "rule": "case_insensitive"
+        }
       ],
       "reference": {
         "sourceName": "Companies House",
@@ -49,13 +95,36 @@
       "id": "ch-bbc-commercial-04463534",
       "kind": "real_reference",
       "jurisdiction": "GB",
-      "params": { "company": "04463534", "jurisdiction": "GB" },
+      "params": {
+        "company": "04463534",
+        "jurisdiction": "GB"
+      },
       "claims": [
-        { "key": "legal_name", "expected": "BBC COMMERCIAL LIMITED", "rule": "case_insensitive" },
-        { "key": "registration_id", "expected": "04463534", "rule": "exact" },
-        { "key": "jurisdiction", "expected": "GB", "rule": "exact" },
-        { "key": "active", "expected": true, "rule": "exact" },
-        { "key": "status", "expected": "active", "rule": "case_insensitive" }
+        {
+          "key": "legal_name",
+          "expected": "BBC COMMERCIAL LIMITED",
+          "rule": "case_insensitive"
+        },
+        {
+          "key": "registration_id",
+          "expected": "04463534",
+          "rule": "exact"
+        },
+        {
+          "key": "jurisdiction",
+          "expected": "GB",
+          "rule": "exact"
+        },
+        {
+          "key": "active",
+          "expected": true,
+          "rule": "exact"
+        },
+        {
+          "key": "status",
+          "expected": "active",
+          "rule": "case_insensitive"
+        }
       ],
       "reference": {
         "sourceName": "Companies House",
@@ -69,13 +138,36 @@
       "id": "ch-dissolved-03877937",
       "kind": "real_reference",
       "jurisdiction": "GB",
-      "params": { "company": "03877937", "jurisdiction": "GB" },
+      "params": {
+        "company": "03877937",
+        "jurisdiction": "GB"
+      },
       "claims": [
-        { "key": "legal_name", "expected": "THE PULVER CARR PARTNERSHIP LIMITED", "rule": "case_insensitive" },
-        { "key": "registration_id", "expected": "03877937", "rule": "exact" },
-        { "key": "jurisdiction", "expected": "GB", "rule": "exact" },
-        { "key": "active", "expected": false, "rule": "exact" },
-        { "key": "status", "expected": "dissolved", "rule": "case_insensitive" }
+        {
+          "key": "legal_name",
+          "expected": "THE PULVER CARR PARTNERSHIP LIMITED",
+          "rule": "case_insensitive"
+        },
+        {
+          "key": "registration_id",
+          "expected": "03877937",
+          "rule": "exact"
+        },
+        {
+          "key": "jurisdiction",
+          "expected": "GB",
+          "rule": "exact"
+        },
+        {
+          "key": "active",
+          "expected": false,
+          "rule": "exact"
+        },
+        {
+          "key": "status",
+          "expected": "dissolved",
+          "rule": "case_insensitive"
+        }
       ],
       "reference": {
         "sourceName": "Companies House",
@@ -89,13 +181,36 @@
       "id": "ch-arm-02587607",
       "kind": "real_reference",
       "jurisdiction": "GB",
-      "params": { "company": "02587607", "jurisdiction": "GB" },
+      "params": {
+        "company": "02587607",
+        "jurisdiction": "GB"
+      },
       "claims": [
-        { "key": "legal_name", "expected": "ARM LIMITED", "rule": "case_insensitive" },
-        { "key": "registration_id", "expected": "02587607", "rule": "exact" },
-        { "key": "jurisdiction", "expected": "GB", "rule": "exact" },
-        { "key": "active", "expected": true, "rule": "exact" },
-        { "key": "status", "expected": "active", "rule": "case_insensitive" }
+        {
+          "key": "legal_name",
+          "expected": "ARM LIMITED",
+          "rule": "case_insensitive"
+        },
+        {
+          "key": "registration_id",
+          "expected": "02587607",
+          "rule": "exact"
+        },
+        {
+          "key": "jurisdiction",
+          "expected": "GB",
+          "rule": "exact"
+        },
+        {
+          "key": "active",
+          "expected": true,
+          "rule": "exact"
+        },
+        {
+          "key": "status",
+          "expected": "active",
+          "rule": "case_insensitive"
+        }
       ],
       "reference": {
         "sourceName": "Companies House",
@@ -109,13 +224,36 @@
       "id": "ch-revolut-08804411",
       "kind": "real_reference",
       "jurisdiction": "GB",
-      "params": { "company": "08804411", "jurisdiction": "GB" },
+      "params": {
+        "company": "08804411",
+        "jurisdiction": "GB"
+      },
       "claims": [
-        { "key": "legal_name", "expected": "REVOLUT LTD", "rule": "case_insensitive" },
-        { "key": "registration_id", "expected": "08804411", "rule": "exact" },
-        { "key": "jurisdiction", "expected": "GB", "rule": "exact" },
-        { "key": "active", "expected": true, "rule": "exact" },
-        { "key": "status", "expected": "active", "rule": "case_insensitive" }
+        {
+          "key": "legal_name",
+          "expected": "REVOLUT LTD",
+          "rule": "case_insensitive"
+        },
+        {
+          "key": "registration_id",
+          "expected": "08804411",
+          "rule": "exact"
+        },
+        {
+          "key": "jurisdiction",
+          "expected": "GB",
+          "rule": "exact"
+        },
+        {
+          "key": "active",
+          "expected": true,
+          "rule": "exact"
+        },
+        {
+          "key": "status",
+          "expected": "active",
+          "rule": "case_insensitive"
+        }
       ],
       "reference": {
         "sourceName": "Companies House",
@@ -129,12 +267,31 @@
       "id": "sec-apple-0000320193",
       "kind": "real_reference",
       "jurisdiction": "US",
-      "params": { "company": "0000320193", "jurisdiction": "US" },
+      "params": {
+        "company": "0000320193",
+        "jurisdiction": "US"
+      },
       "claims": [
-        { "key": "legal_name", "expected": "Apple Inc.", "rule": "case_insensitive" },
-        { "key": "registration_id", "expected": "0000320193", "rule": "exact" },
-        { "key": "jurisdiction", "expected": "US", "rule": "exact" },
-        { "key": "active", "expected": true, "rule": "exact" }
+        {
+          "key": "legal_name",
+          "expected": "Apple Inc.",
+          "rule": "case_insensitive"
+        },
+        {
+          "key": "registration_id",
+          "expected": "0000320193",
+          "rule": "exact"
+        },
+        {
+          "key": "jurisdiction",
+          "expected": "US",
+          "rule": "exact"
+        },
+        {
+          "key": "active",
+          "expected": true,
+          "rule": "exact"
+        }
       ],
       "reference": {
         "sourceName": "SEC EDGAR",
@@ -150,12 +307,31 @@
       "id": "sec-microsoft-0000789019",
       "kind": "real_reference",
       "jurisdiction": "US",
-      "params": { "company": "0000789019", "jurisdiction": "US" },
+      "params": {
+        "company": "0000789019",
+        "jurisdiction": "US"
+      },
       "claims": [
-        { "key": "legal_name", "expected": "MICROSOFT CORP", "rule": "case_insensitive" },
-        { "key": "registration_id", "expected": "0000789019", "rule": "exact" },
-        { "key": "jurisdiction", "expected": "US", "rule": "exact" },
-        { "key": "active", "expected": true, "rule": "exact" }
+        {
+          "key": "legal_name",
+          "expected": "MICROSOFT CORP",
+          "rule": "case_insensitive"
+        },
+        {
+          "key": "registration_id",
+          "expected": "0000789019",
+          "rule": "exact"
+        },
+        {
+          "key": "jurisdiction",
+          "expected": "US",
+          "rule": "exact"
+        },
+        {
+          "key": "active",
+          "expected": true,
+          "rule": "exact"
+        }
       ],
       "reference": {
         "sourceName": "SEC EDGAR",
@@ -165,6 +341,215 @@
         "synthetic": false,
         "cik": "0000789019",
         "ticker": "MSFT"
+      }
+    },
+    {
+      "id": "ch-google-uk-03977902",
+      "kind": "real_reference",
+      "jurisdiction": "GB",
+      "params": {
+        "company": "03977902",
+        "jurisdiction": "GB"
+      },
+      "claims": [
+        {
+          "key": "legal_name",
+          "expected": "GOOGLE UK LIMITED",
+          "rule": "case_insensitive"
+        },
+        {
+          "key": "registration_id",
+          "expected": "03977902",
+          "rule": "exact"
+        },
+        {
+          "key": "jurisdiction",
+          "expected": "GB",
+          "rule": "exact"
+        },
+        {
+          "key": "active",
+          "expected": true,
+          "rule": "exact"
+        },
+        {
+          "key": "status",
+          "expected": "active",
+          "rule": "case_insensitive"
+        }
+      ],
+      "reference": {
+        "sourceName": "Companies House",
+        "sourceUrl": "https://find-and-update.company-information.service.gov.uk/company/03977902",
+        "retrievedAt": "2026-11-26T00:00:00.000Z",
+        "independentlyReviewed": true,
+        "synthetic": false
+      }
+    },
+    {
+      "id": "ch-amazon-uk-03223028",
+      "kind": "real_reference",
+      "jurisdiction": "GB",
+      "params": {
+        "company": "03223028",
+        "jurisdiction": "GB"
+      },
+      "claims": [
+        {
+          "key": "legal_name",
+          "expected": "AMAZON UK SERVICES LTD.",
+          "rule": "case_insensitive"
+        },
+        {
+          "key": "registration_id",
+          "expected": "03223028",
+          "rule": "exact"
+        },
+        {
+          "key": "jurisdiction",
+          "expected": "GB",
+          "rule": "exact"
+        },
+        {
+          "key": "active",
+          "expected": true,
+          "rule": "exact"
+        },
+        {
+          "key": "status",
+          "expected": "active",
+          "rule": "case_insensitive"
+        }
+      ],
+      "reference": {
+        "sourceName": "Companies House",
+        "sourceUrl": "https://find-and-update.company-information.service.gov.uk/company/03223028",
+        "retrievedAt": "2026-11-26T00:00:00.000Z",
+        "independentlyReviewed": true,
+        "synthetic": false
+      }
+    },
+    {
+      "id": "ch-meta-platforms-tech-uk-13792358",
+      "kind": "real_reference",
+      "jurisdiction": "GB",
+      "params": {
+        "company": "13792358",
+        "jurisdiction": "GB"
+      },
+      "claims": [
+        {
+          "key": "legal_name",
+          "expected": "META PLATFORMS TECHNOLOGIES UK LTD",
+          "rule": "case_insensitive"
+        },
+        {
+          "key": "registration_id",
+          "expected": "13792358",
+          "rule": "exact"
+        },
+        {
+          "key": "jurisdiction",
+          "expected": "GB",
+          "rule": "exact"
+        },
+        {
+          "key": "active",
+          "expected": true,
+          "rule": "exact"
+        },
+        {
+          "key": "status",
+          "expected": "active",
+          "rule": "case_insensitive"
+        }
+      ],
+      "reference": {
+        "sourceName": "Companies House",
+        "sourceUrl": "https://find-and-update.company-information.service.gov.uk/company/13792358",
+        "retrievedAt": "2026-11-26T00:00:00.000Z",
+        "independentlyReviewed": true,
+        "synthetic": false
+      }
+    },
+    {
+      "id": "sec-alphabet-0001652044",
+      "kind": "real_reference",
+      "jurisdiction": "US",
+      "params": {
+        "company": "0001652044",
+        "jurisdiction": "US"
+      },
+      "claims": [
+        {
+          "key": "legal_name",
+          "expected": "Alphabet Inc.",
+          "rule": "case_insensitive"
+        },
+        {
+          "key": "registration_id",
+          "expected": "0001652044",
+          "rule": "exact"
+        },
+        {
+          "key": "jurisdiction",
+          "expected": "US",
+          "rule": "exact"
+        },
+        {
+          "key": "active",
+          "expected": true,
+          "rule": "exact"
+        }
+      ],
+      "reference": {
+        "sourceName": "SEC EDGAR",
+        "sourceUrl": "https://www.sec.gov/edgar/browse/?CIK=0001652044&owner=include",
+        "retrievedAt": "2026-11-26T00:00:00.000Z",
+        "independentlyReviewed": true,
+        "synthetic": false,
+        "cik": "0001652044",
+        "ticker": "GOOGL"
+      }
+    },
+    {
+      "id": "sec-nvidia-0001045810",
+      "kind": "real_reference",
+      "jurisdiction": "US",
+      "params": {
+        "company": "0001045810",
+        "jurisdiction": "US"
+      },
+      "claims": [
+        {
+          "key": "legal_name",
+          "expected": "NVIDIA CORP",
+          "rule": "case_insensitive"
+        },
+        {
+          "key": "registration_id",
+          "expected": "0001045810",
+          "rule": "exact"
+        },
+        {
+          "key": "jurisdiction",
+          "expected": "US",
+          "rule": "exact"
+        },
+        {
+          "key": "active",
+          "expected": true,
+          "rule": "exact"
+        }
+      ],
+      "reference": {
+        "sourceName": "SEC EDGAR",
+        "sourceUrl": "https://www.sec.gov/edgar/browse/?CIK=0001045810&owner=include",
+        "retrievedAt": "2026-11-26T00:00:00.000Z",
+        "independentlyReviewed": true,
+        "synthetic": false,
+        "cik": "0001045810",
+        "ticker": "NVDA"
       }
     }
   ]

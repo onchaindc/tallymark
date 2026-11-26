@@ -1,9 +1,10 @@
 #!/usr/bin/env python3
-"""Build controlled preference pairs from TALLYMARK's real-reference benchmark.
+"""Build controlled preference pairs from independently sourced registry records.
 
-These are counterfactual training examples, not captured miner transcripts.
-The provenance is deliberately marked source_kind=llm so eval-pool admission
-does not misrepresent their authorship as human or source-attested.
+The output is an LLM-constructed counterfactual dataset, not observed Miner
+transcripts or human labels. Provenance remains source_kind=llm (unverified).
+Every negative changes exactly one field and is drawn from the same
+jurisdiction, avoiding cross-registry donor corruption.
 """
 from __future__ import annotations
 import json
@@ -13,115 +14,97 @@ ROOT = Path(__file__).resolve().parents[1]
 SOURCE = ROOT / "benchmarks/real/corporate-registry-v2.json"
 OUTPUT = ROOT / "training/corporate-registry-pairs.jsonl"
 
-PROMPT_PREFIXES = [
-  "Registry check requested: locate {id} within {jur}.",
-  "Identify the registered entity tied to company reference {id} in {jur}.",
-  "Search the {jur} company register using this identifier: {id}.",
-  "Resolve the corporate record for {id}; registry territory is {jur}.",
-  "Company lookup parameters — reference {id}; jurisdiction {jur}.",
-  "Please retrieve the official filing record indexed as {id} ({jur}).",
-  "I am checking a counterparty's legal identity. Start with {id} in {jur}.",
-  "Use {id} as the company key and {jur} as the register.",
-  "Which legal entity does the register associate with {id} under {jur}?",
-  "Run a registry identity check for {id}, using {jur} as the jurisdiction."
+PROMPTS = [
+    "Resolve registry identifier {id} in jurisdiction {jur}.",
+    "A counterparty supplied registration reference {id} ({jur}). Verify its registry identity.",
+    "Look up company number {id} in the {jur} register and return the official record.",
+    "For {jur} company reference {id}, confirm the registered identity and standing.",
+    "Check this corporate identity: registry={jur}; reference={id}.",
 ]
-PROMPT_SUFFIXES = [
-  "Return the registered name, number, jurisdiction and present standing.",
-  "State the exact legal name and confirm whether the entity is active or dissolved.",
-  "Provide the entity name plus its registration key and current status.",
-  "I need the register's own classification, not an inference from the name.",
-  "Include all four identity and status fields in the result.",
-  "Report the legal-name match and the register's active-status indicator.",
-  "Do not substitute a similarly named business; verify the identifier.",
-  "Summarise the filing identity and whether the record remains current.",
-  "Cross-check the number against the name and report the recorded standing.",
-  "Give a concise registry result with the name, identifier and active state."
+TASKS = [
+    "Return the exact legal name, registration identifier, jurisdiction and active indicator.",
+    "Report the name recorded against that identifier and whether the register marks it active.",
+    "Do not infer from a trading name. Give the register's legal entity name and status fields.",
+    "Confirm all identity fields against the supplied registry number; flag any mismatch.",
+    "Provide a concise record containing legal name, registry number, jurisdiction and active state.",
 ]
 ANSWER_TEMPLATES = [
-  "The registry entry identifies {name}. Registration identifier: {id}. Jurisdiction: {jur}. Active: {active}.",
-  "Registered entity: {name}. The record number is {id}, the jurisdiction is {jur}, and the active indicator is {active}.",
-  "According to the referenced register, the legal name is {name}; identifier {id}; jurisdiction {jur}; active flag {active}.",
-  "I found {name} under registry number {id} in {jur}. The register records its active status as {active}.",
-  "Legal entity: {name}\nCompany/registry number: {id}\nJurisdiction: {jur}\nActive: {active}",
-  "The matching record is {name} ({id}, {jur}). The register records active as {active}.",
-  "Registry result: {name}, reference {id}, jurisdiction {jur}. Active indicator: {active}.",
-  "The official record for this lookup is {name}. It carries identifier {id} in {jur}; active is {active}.",
-  "Name on register: {name}. Identifier: {id}. Jurisdiction: {jur}. Active: {active}.",
-  "For {id} in {jur}, the registered name is {name}. The register's active indicator is {active}."
-]
-NOTES = [
-  "This result describes registry identity and standing only.",
-  "The status stated here is limited to the referenced register.",
-  "No conclusion about ownership or financial condition is implied.",
-  "The lookup concerns the entity record, not its wider counterparties.",
-  "This summary reports register fields rather than a due-diligence conclusion.",
-  "The response is confined to the identified registry entry.",
-  "The stated status is the register's current classification.",
-  "This record summary does not assess beneficial ownership.",
-  "The result covers identity fields and register standing only.",
-  "No inference about sanctions, solvency or control is made."
+    "Legal name: {name}. Registration identifier: {id}. Jurisdiction: {jur}. Active: {active}.",
+    "The official record identifies {name} (number {id}, jurisdiction {jur}). Active indicator: {active}.",
+    "Registry match: {name} | ID {id} | {jur} | active={active}.",
+    "According to the cited register, {name} is recorded under {id} in {jur}; active is {active}.",
+    "Name on register: {name}\nRegistration number: {id}\nJurisdiction: {jur}\nActive: {active}",
 ]
 
-def claims(case):
-    values = {item["key"]: item["expected"] for item in case["claims"]}
-    return {
-        "id": str(values["registration_id"]),
-        "jur": values["jurisdiction"],
-        "name": values["legal_name"],
-        "active": bool(values["active"]),
-        "url": case["reference"]["sourceUrl"],
-    }
-
-def render(template, record, note):
-    answer = template.format(
-        name=record["name"], id=record["id"], jur=record["jur"],
-        active=str(record["active"]).lower(),
-    )
-    return answer + " " + note
+def read_records():
+    source = json.loads(SOURCE.read_text(encoding="utf-8"))
+    records = []
+    for case in source["cases"]:
+        if case.get("kind") != "real_reference":
+            continue
+        values = {claim["key"]: claim["expected"] for claim in case["claims"]}
+        records.append({
+            "name": str(values["legal_name"]),
+            "id": str(values["registration_id"]),
+            "jur": str(values["jurisdiction"]),
+            "active": bool(values["active"]),
+            "url": case["reference"]["sourceUrl"],
+        })
+    if len(records) < 13:
+        raise SystemExit(f"Expected at least 13 reviewed source records; found {len(records)}")
+    return records
 
 def build():
-    source = json.loads(SOURCE.read_text(encoding="utf-8"))
-    records = [claims(case) for case in source["cases"]
-               if case.get("kind") == "real_reference"]
-    active = [i for i, row in enumerate(records) if row["active"]]
-    dissolved = [i for i, row in enumerate(records) if not row["active"]]
-    if len(records) != 8 or len(dissolved) != 1 or not active:
-        raise SystemExit("Expected the reviewed eight-record benchmark with one dissolved entity")
+    records = read_records()
+    by_jurisdiction = {}
+    for index, record in enumerate(records):
+        by_jurisdiction.setdefault(record["jur"], []).append((index, record))
 
     rows = []
-    for group in range(10):
-        sequence = []
-        for j in range(5):
-            sequence.extend([dissolved[0], active[(group * 5 + j) % len(active)]])
-        donors = sequence[1:] + sequence[:1]
-        for i, (target_index, donor_index) in enumerate(zip(sequence, donors)):
-            target, donor = records[target_index], records[donor_index]
-            field = ("name", "id", "active")[(i + group) % 3]
-            wrong = dict(target)
-            wrong[field] = donor[field]
-            template = ANSWER_TEMPLATES[(group + i) % len(ANSWER_TEMPLATES)]
-            note = NOTES[(group * 7 + i) % len(NOTES)]
-            prompt = PROMPT_PREFIXES[group].format(
-                id=target["id"], jur=target["jur"]
-            ) + " " + PROMPT_SUFFIXES[i]
-            rows.append({
-                "prompt": prompt,
-                "chosen": render(template, target, note),
-                "rejected": render(template, wrong, note),
-                "label_kind": "preference_pair",
-                "provenance": {
-                    "source_kind": "llm",
-                    "source_url": target["url"],
-                },
-            })
-    if len(rows) != 100 or len({row["prompt"] for row in rows}) != 100:
-        raise SystemExit("Expected 100 unique prompts")
+    for index, target in enumerate(records):
+        peers = [row for row in by_jurisdiction[target["jur"]] if row[0] != index]
+        if not peers:
+            raise SystemExit(f"No same-jurisdiction donor for {target['id']}")
+
+        for field in ("name", "id", "active"):
+            donors = [row for row in peers if row[1][field] != target[field]]
+            if not donors:
+                continue
+            for variant in range(5):
+                donor_index, donor = donors[(index + variant) % len(donors)]
+                wrong = dict(target)
+                wrong[field] = donor[field]
+                prompt = PROMPTS[variant].format(id=target["id"], jur=target["jur"])
+                prompt += " " + TASKS[(variant + (0 if field == "name" else 1 if field == "id" else 2)) % len(TASKS)]
+                template = ANSWER_TEMPLATES[(variant + index) % len(ANSWER_TEMPLATES)]
+                def render(record):
+                    return template.format(
+                        name=record["name"], id=record["id"], jur=record["jur"],
+                        active=str(record["active"]).lower(),
+                    )
+                rows.append({
+                    "prompt": prompt,
+                    "chosen": render(target),
+                    "rejected": render(wrong),
+                    "label_kind": "preference_pair",
+                    "provenance": {
+                        "source_kind": "llm",
+                        "source_url": target["url"],
+                    },
+                })
+
+    if len(rows) < 150:
+        raise SystemExit(f"Expected at least 150 pairs after same-jurisdiction filtering; found {len(rows)}")
+    if len({row["prompt"] for row in rows}) != len(rows):
+        raise SystemExit("Duplicate prompts generated")
+    if any(row["chosen"] == row["rejected"] for row in rows):
+        raise SystemExit("Identical preference pair generated")
     OUTPUT.parent.mkdir(parents=True, exist_ok=True)
     OUTPUT.write_text(
         "".join(json.dumps(row, ensure_ascii=False) + "\n" for row in rows),
         encoding="utf-8",
     )
-    print(f"Wrote {len(rows)} preference pairs to {OUTPUT}")
+    print(f"Wrote {len(rows)} preference pairs from {len(records)} real-reference records")
 
 if __name__ == "__main__":
     build()
