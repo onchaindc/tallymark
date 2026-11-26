@@ -44,3 +44,13 @@ This is complementary to on-protocol ranking, not a substitute registration pack
 ## Reproducibility
 
 Given retained `rawResponse` + `responseHash` + case `claims` + `reference`, re-run `evaluateRun` offline for the same claim-level scores without trusting miner self-reports.
+
+## Current evaluation material status
+
+- Training source records: 19 (15 GB Companies House, 4 US SEC EDGAR).
+- Preference pairs: 265; LLM-constructed counterfactuals with `source_kind=llm` and unverified provenance.
+- Pinned trainer data gate: passed in [GitHub Actions run 45908332861](https://github.com/onchaindc/tallymark/actions/runs/45908332861).
+- Held-out challenge set: six different Companies House entities in `benchmarks/heldout/corporate-registry-adversarial-v1.json`; it is structurally checked and excluded from training.
+- The held-out fixture is not a live Miner evaluation and no competitive adapter accuracy is claimed.
+
+The next on-protocol milestone is not another synthetic data expansion. It requires independently labelled Miner responses, entity- and time-held-out validation, supported GPU training, adapter packaging and hosting, and the protocol bond/registration steps. Do not register or advertise the local scorer as a judgment adapter.
