@@ -4,37 +4,27 @@
   "family": "CORPORATE_REGISTRY_LOOKUP",
   "dataset_file": "training/corporate-registry-pairs.jsonl",
   "generator": "training/build_preference_pairs.py",
-  "pair_count": 100,
-  "source_record_count": 8,
+  "pair_count": null,
+  "source_record_count": 13,
   "source_kinds": [
     "llm"
   ],
   "observed_miner_transcripts": 0,
   "provenance_class": "unverified",
   "gate": {
-    "unique_rejected_frac": 1,
-    "top_rejected_share": 0.01,
-    "identical_pairs": 0,
-    "length_shortcut_acc": 0.505,
-    "eval_negative_leak": 0,
-    "surface_probe_by_seed": [
-      0.4667,
-      0.5,
-      0.4,
-      0.3333,
-      0.3
-    ],
-    "surface_probe_acc": 0.4,
-    "prompt_near_duplicate_pairs_at_85pct": 0,
-    "mean_chosen_chars": 179,
-    "mean_rejected_chars": 178.8,
-    "status": "PASS_OFFICIAL_PINNED_TRAINER",
-    "official_ci_run": "https://github.com/onchaindc/tallymark/actions/runs/45907031587",
-    "trainer": "telegraphprotocol/telegraph-wasm-baseline@1ed063e2f0066cfaf0e124d66ec6a17b7a6121fd float_runtime.train_adapter --check-data"
+    "status": "PENDING_OFFICIAL_CI",
+    "note": "Previous 100-pair gate metrics do not apply to this expanded dataset. Await the pinned trainer CI run before recording new metrics."
+  },
+  "design_checks": {
+    "same_jurisdiction_donors": true,
+    "one_field_corrupted_per_pair": true,
+    "duplicate_prompts_rejected": true,
+    "identical_pairs_rejected": true
   },
   "limitations": [
     "Pairs are LLM-constructed counterfactuals, not captured Miner transcripts or human-authored labels.",
-    "Only eight entities support the current corpus; entity memorisation remains a risk.",
+    "Source coverage is limited to 13 entities across GB Companies House and US SEC EDGAR; this is not broad jurisdiction coverage.",
+    "SEC active=true denotes a current EDGAR registrant evidenced by recent filings, not a Companies House-style corporate status field.",
     "No model training, export, packaging, runnable endpoint, registration, or on-chain action has been performed."
   ]
 }
