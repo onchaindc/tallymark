@@ -33,6 +33,10 @@ TALLYMARK is an independent evaluator and benchmarking system. It is not itself 
 - [Security](#security)
 - [License](#license)
 
+## Evaluator-track submission
+
+See [SUBMISSION.md](SUBMISSION.md) for the exact evaluation-material package, reproduction commands, provenance disclosures, and the remaining requirements for an on-protocol judgment adapter.
+
 ## Why TALLYMARK exists
 
 A successful API response is not the same thing as a correct answer.
