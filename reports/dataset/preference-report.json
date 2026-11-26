@@ -28,7 +28,9 @@
     "prompt_near_duplicate_pairs_at_85pct": 0,
     "mean_chosen_chars": 179,
     "mean_rejected_chars": 178.8,
-    "status": "PASS_REPRODUCED_LOCALLY_NOT_YET_OFFICIAL_CI"
+    "status": "PASS_OFFICIAL_PINNED_TRAINER",
+    "official_ci_run": "https://github.com/onchaindc/tallymark/actions/runs/45907031587",
+    "trainer": "telegraphprotocol/telegraph-wasm-baseline@1ed063e2f0066cfaf0e124d66ec6a17b7a6121fd float_runtime.train_adapter --check-data"
   },
   "limitations": [
     "Pairs are LLM-constructed counterfactuals, not captured Miner transcripts or human-authored labels.",
