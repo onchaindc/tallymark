@@ -12,8 +12,17 @@
   "observed_miner_transcripts": 0,
   "provenance_class": "unverified",
   "gate": {
-    "status": "PENDING_OFFICIAL_CI",
-    "note": "Second expansion batch added six Companies House records. Previous gate metrics do not apply to this regenerated corpus."
+    "unique_rejected_frac": 0.955,
+    "top_rejected_share": 0.008,
+    "identical_pairs": 0,
+    "length_shortcut_acc": 0.615,
+    "eval_negative_leak": 0.051,
+    "surface_probe_acc": 0.569,
+    "mean_chosen_chars": 96,
+    "mean_rejected_chars": 96,
+    "status": "PASS_OFFICIAL_PINNED_TRAINER",
+    "official_ci_run": "https://github.com/onchaindc/tallymark/actions/runs/45908332861",
+    "trainer": "telegraphprotocol/telegraph-wasm-baseline@1ed063e2f0066cfaf0e124d66ec6a17b7a6121fd float_runtime.train_adapter --check-data"
   },
   "design_checks": {
     "same_jurisdiction_donors": true,
@@ -23,7 +32,7 @@
   },
   "limitations": [
     "Pairs are LLM-constructed counterfactuals, not captured Miner transcripts or human-authored labels.",
-    "Only nineteen entities support the corpus across GB Companies House and US SEC EDGAR; jurisdiction coverage remains limited.",
+    "Nineteen entities support the corpus across GB Companies House and US SEC EDGAR; broader jurisdiction coverage and entity-held-out evaluation remain necessary.",
     "SEC active=true denotes a current EDGAR registrant evidenced by recent filings, not a Companies House-style corporate status field.",
     "No model training, export, packaging, runnable endpoint, registration, or on-chain action has been performed."
   ]
