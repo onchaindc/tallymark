@@ -1,0 +1,38 @@
+{
+  "evaluatedAt": "2026-11-26T12:00:00.000Z",
+  "mode": "fixture",
+  "notice": "SYNTHETIC DEMO ONLY. No live Telegraph requests were made and the reference record is not authoritative. Do not present these scores as live miner performance.",
+  "benchmark": {
+    "id": "company-registry-status-demo",
+    "maxEvidenceAgeHours": 720,
+    "claims": [
+      { "key": "legal_name", "expected": "Example Holdings Limited", "rule": "case_insensitive" },
+      { "key": "jurisdiction", "expected": "GB", "rule": "exact" },
+      { "key": "status", "expected": "active", "rule": "case_insensitive" }
+    ]
+  },
+  "responses": [
+    {
+      "providerId": "miner-alpha-demo",
+      "claims": { "legal_name": "Example Holdings Limited", "jurisdiction": "GB", "status": "active" },
+      "evidence": [
+        { "source": "demo-registry-a", "observedAt": "2026-11-25T10:00:00.000Z", "contentHash": "demo-hash-a" },
+        { "source": "demo-registry-a", "observedAt": "2026-11-25T10:00:00.000Z", "contentHash": "demo-hash-b" },
+        { "source": "demo-registry-a", "observedAt": "2026-11-25T10:00:00.000Z", "contentHash": "demo-hash-c" }
+      ],
+      "latencyMs": 840,
+      "costUsd": 0.03,
+      "verified": true
+    },
+    {
+      "providerId": "miner-beta-demo",
+      "claims": { "legal_name": "Example Holdings Ltd", "jurisdiction": "US", "status": "unknown" },
+      "evidence": [
+        { "source": "demo-blog", "observedAt": "2026-11-01T10:00:00.000Z", "contentHash": "demo-hash-d" }
+      ],
+      "latencyMs": 420,
+      "costUsd": 0.01,
+      "verified": true
+    }
+  ]
+}
