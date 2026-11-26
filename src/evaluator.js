@@ -1,33 +1,44 @@
 import { createHash } from 'node:crypto';
 
 /**
- * Scoring weights for overall reliability score.
- * Latency and cost are reported separately and used only for ranking ties / context.
+ * TALLYMARK independent scoring engine.
+ * HTTP 200 and provider self-reported verified flags are never treated as proof.
  */
-const WEIGHTS = Object.freeze({
+
+export const WEIGHTS = Object.freeze({
   accuracy: 0.5,
   completeness: 0.2,
   evidence: 0.2,
   freshness: 0.1,
 });
 
+export const FailureCode = Object.freeze({
+  CORRECT: 'correct',
+  INCORRECT: 'incorrect',
+  MISSING_VALUE: 'missing_value',
+  UNSUPPORTED_CLAIM: 'unsupported_claim',
+  MISSING_EVIDENCE: 'missing_evidence',
+  STALE_EVIDENCE: 'stale_evidence',
+  UNAVAILABLE_SOURCE: 'unavailable_source',
+  TRANSPORT_FAILURE: 'transport_failure',
+  PROVIDER_SELF_REPORT_IGNORED: 'provider_self_report_ignored',
+  SYNTHETIC_EXCLUDED: 'synthetic_excluded',
+});
+
 function normalize(value) {
-  if (typeof value === 'string') {
-    return value.trim().toLowerCase().replace(/\s+/g, ' ');
-  }
+  if (typeof value === 'string') return value.trim().toLowerCase().replace(/\s+/g, ' ');
+  if (typeof value === 'boolean') return value;
   return value;
 }
 
-/**
- * Deterministic claim comparison.
- * Missing / null / empty values never count as a match.
- */
-function compare(actual, expected, rule = 'exact') {
+export function compare(actual, expected, rule = 'exact') {
   if (actual === undefined || actual === null || actual === '') return false;
   switch (rule) {
     case 'exact':
-    case 'case_insensitive':
+      if (typeof expected === 'boolean') return Boolean(actual) === expected;
       return normalize(actual) === normalize(expected);
+    case 'case_insensitive':
+      return normalize(String(actual)) === normalize(String(expected));
     case 'number':
       return Number.isFinite(Number(actual)) && Number(actual) === Number(expected);
     case 'contains':
@@ -41,7 +52,7 @@ function compare(actual, expected, rule = 'exact') {
   }
 }
 
-function hashPayload(payload) {
+export function hashPayload(payload) {
   return createHash('sha256').update(JSON.stringify(payload)).digest('hex');
 }
 
@@ -50,138 +61,210 @@ function nonNegative(value) {
   return Number.isFinite(n) && n >= 0 ? n : null;
 }
 
-/**
- * Score a single provider response against a benchmark case.
- * - Accuracy: fraction of claims that match expected values under the claim rule.
- * - Completeness: fraction of claims for which the provider supplied a non-empty value.
- * - Evidence: fraction of claims that have at least one evidence item with source + observedAt + contentHash.
- * - Freshness: fraction of evidence items whose observedAt falls within maxEvidenceAgeHours.
- * Missing evidence is never treated as correct. Provider `verified` flags are recorded but ignored for scoring.
- */
-function scoreCase(benchmark, response, evaluatedAt = new Date()) {
+function evidenceValid(item) {
+  return Boolean(item && item.source && item.observedAt && item.contentHash);
+}
+
+function isFresh(item, evaluatedAt, maxAgeHours) {
+  if (!item?.observedAt || maxAgeHours == null) return false;
+  const observed = Date.parse(item.observedAt);
+  if (!Number.isFinite(observed)) return false;
+  const ageMs = evaluatedAt.getTime() - observed;
+  return ageMs >= 0 && ageMs <= maxAgeHours * 3600 * 1000;
+}
+
+export function scoreCase(benchmark, response, evaluatedAt = new Date()) {
+  if (benchmark?.kind && String(benchmark.kind).startsWith('synthetic')) {
+    return {
+      caseId: benchmark.id,
+      excluded: true,
+      failureCode: FailureCode.SYNTHETIC_EXCLUDED,
+      note: 'Synthetic controls are excluded from published real scores.',
+      accuracy: null,
+      completeness: null,
+      evidence: null,
+      freshness: null,
+      overall: null,
+    };
+  }
+
+  if (response?.transportError || response?.status === 'transport_failure') {
+    return {
+      caseId: benchmark.id,
+      excluded: false,
+      failureCode: FailureCode.TRANSPORT_FAILURE,
+      transportError: response.transportError || response.error || true,
+      accuracy: 0,
+      completeness: 0,
+      evidence: 0,
+      freshness: 0,
+      overall: 0,
+      claimResults: (benchmark.claims || []).map((c) => ({
+        key: c.key,
+        expected: c.expected,
+        actual: null,
+        hit: false,
+        failureCode: FailureCode.TRANSPORT_FAILURE,
+      })),
+    };
+  }
+
   const claims = benchmark.claims ?? [];
-  const returned = response.claims ?? {};
+  const returned = response.claims ?? response.result ?? {};
+  const evidenceByClaim = response.evidence ?? {};
+  const maxAge = benchmark.maxEvidenceAgeHours ?? response.maxEvidenceAgeHours ?? 168;
+  const providerVerifiedIgnored = Boolean(response.verified || response.providerVerified);
+
   let correct = 0;
   let supplied = 0;
+  let evidenceOk = 0;
+  let freshOk = 0;
+  let evidenceTotal = 0;
 
   const claimResults = claims.map((claim) => {
     const actual = returned[claim.key];
     const present = actual !== undefined && actual !== null && actual !== '';
     if (present) supplied += 1;
-    const passed = compare(actual, claim.expected, claim.rule ?? 'exact');
-    if (passed) correct += 1;
+
+    const evidenceItems = Array.isArray(evidenceByClaim[claim.key])
+      ? evidenceByClaim[claim.key]
+      : evidenceByClaim[claim.key]
+        ? [evidenceByClaim[claim.key]]
+        : [];
+
+    const hasValidEvidence = evidenceItems.some(evidenceValid);
+    if (hasValidEvidence) evidenceOk += 1;
+    evidenceTotal += 1;
+
+    const anyFresh = evidenceItems.some((e) => isFresh(e, evaluatedAt, maxAge));
+    if (anyFresh) freshOk += 1;
+
+    const hit = compare(actual, claim.expected, claim.rule ?? 'exact');
+    let failureCode = FailureCode.CORRECT;
+    if (!present) failureCode = FailureCode.MISSING_VALUE;
+    else if (!hit) failureCode = FailureCode.INCORRECT;
+    else if (!hasValidEvidence) failureCode = FailureCode.MISSING_EVIDENCE;
+    else if (evidenceItems.length && !anyFresh) failureCode = FailureCode.STALE_EVIDENCE;
+
+    if (hit && present) correct += 1;
+
     return {
       key: claim.key,
       expected: claim.expected,
       actual: present ? actual : null,
+      hit: hit && present,
+      present,
+      hasValidEvidence,
+      fresh: anyFresh,
+      failureCode:
+        present && hit
+          ? hasValidEvidence
+            ? anyFresh
+              ? FailureCode.CORRECT
+              : FailureCode.STALE_EVIDENCE
+            : FailureCode.MISSING_EVIDENCE
+          : failureCode,
       rule: claim.rule ?? 'exact',
-      status: !present ? 'missing' : passed ? 'match' : 'mismatch',
     };
   });
 
-  const accuracy = claims.length ? correct / claims.length : 0;
-  const completeness = claims.length ? supplied / claims.length : 0;
-
-  const refs = Array.isArray(response.evidence) ? response.evidence : [];
-  const evidenceValid = refs.filter(
-    (item) =>
-      item &&
-      typeof item.source === 'string' &&
-      item.source.trim() &&
-      item.observedAt &&
-      item.contentHash,
-  ).length;
-  const evidence = claims.length ? Math.min(1, evidenceValid / claims.length) : 0;
-
-  const maxAgeHours = benchmark.maxEvidenceAgeHours ?? 24 * 30;
-  const evalMs = evaluatedAt.getTime();
-  const freshCount = refs.filter((item) => {
-    if (!item?.observedAt) return false;
-    const age = (evalMs - new Date(item.observedAt).getTime()) / 3_600_000;
-    return Number.isFinite(age) && age >= 0 && age <= maxAgeHours;
-  }).length;
-  const freshness = refs.length ? freshCount / refs.length : 0;
-
+  const n = claims.length || 1;
+  const accuracy = correct / n;
+  const completeness = supplied / n;
+  const evidence = evidenceOk / n;
+  const freshness = evidenceTotal ? freshOk / evidenceTotal : 0;
   const overall =
-    accuracy * WEIGHTS.accuracy +
-    completeness * WEIGHTS.completeness +
-    evidence * WEIGHTS.evidence +
-    freshness * WEIGHTS.freshness;
-
-  const unsupportedClaims = claimResults.filter((c) => c.status === 'mismatch' || c.status === 'missing');
+    WEIGHTS.accuracy * accuracy +
+    WEIGHTS.completeness * completeness +
+    WEIGHTS.evidence * evidence +
+    WEIGHTS.freshness * freshness;
 
   return {
-    benchmarkId: benchmark.id,
-    providerId: response.providerId,
-    scores: {
-      accuracy,
-      completeness,
-      evidence,
-      freshness,
-      overall,
-    },
-    claims: claimResults,
-    unsupportedClaims,
-    metrics: {
-      latencyMs: nonNegative(response.latencyMs),
-      costUsd: nonNegative(response.costUsd),
-      evidenceCount: refs.length,
-      evidenceWithRequiredMetadata: evidenceValid,
-    },
-    providerVerifiedFlagIgnored: response.verified === true,
-    responseHash: hashPayload(response),
-    rawResponseStored: true,
+    caseId: benchmark.id,
+    excluded: false,
+    accuracy,
+    completeness,
+    evidence,
+    freshness,
+    overall,
+    claimResults,
+    providerVerifiedIgnored,
+    failureCodes: claimResults.map((c) => c.failureCode),
+    latencyMs: nonNegative(response.latencyMs),
+    costUsd: nonNegative(response.costUsd),
+    responseHash: response.responseHash || null,
   };
 }
 
-/**
- * Evaluate a full run: multiple provider responses against one benchmark.
- * Preserves every response hash and claim-level outcome for reproducibility.
- */
-function evaluateRun(benchmark, responses, evaluatedAt = new Date(), options = {}) {
-  if (!benchmark?.id) {
-    throw new Error('benchmark.id is required');
-  }
-  if (!Array.isArray(responses)) {
-    throw new Error('responses must be an array');
-  }
+export function evaluateRun(run, evaluatedAt = new Date()) {
+  if (!run?.benchmarks?.length) throw new Error('evaluateRun: benchmarks required');
+  if (!run?.id) throw new Error('evaluateRun: missing benchmark run id');
 
-  const results = responses.map((response) => scoreCase(benchmark, response, evaluatedAt));
-  const providers = [...new Set(results.map((r) => r.providerId))];
+  const realBenchmarks = run.benchmarks.filter((b) => !String(b.kind || '').startsWith('synthetic'));
+  const providers = run.providers ?? [];
 
-  const leaderboard = providers
-    .map((providerId) => {
-      const rows = results.filter((r) => r.providerId === providerId);
-      const mean = (key) => rows.reduce((sum, row) => sum + row.scores[key], 0) / rows.length;
-      const costs = rows.map((r) => r.metrics.costUsd).filter((v) => v !== null);
-      const latencies = rows.map((r) => r.metrics.latencyMs).filter((v) => v !== null);
-      return {
-        providerId,
-        cases: rows.length,
-        scores: Object.fromEntries([...Object.keys(WEIGHTS), 'overall'].map((k) => [k, mean(k)])),
-        averageCostUsd: costs.length ? costs.reduce((a, b) => a + b, 0) / costs.length : null,
-        averageLatencyMs: latencies.length ? latencies.reduce((a, b) => a + b, 0) / latencies.length : null,
-      };
+  const providerResults = providers.map((provider) => {
+    const caseScores = realBenchmarks.map((b) => {
+      const response = provider.responses?.[b.id] ?? { transportError: 'no_response' };
+      return scoreCase(b, response, evaluatedAt);
+    });
+    const active = caseScores.filter((s) => !s.excluded);
+    const avg = (key) =>
+      active.length ? active.reduce((a, s) => a + (Number(s[key]) || 0), 0) / active.length : 0;
+
+    return {
+      providerId: provider.id,
+      providerName: provider.name ?? provider.id,
+      caseScores,
+      accuracy: avg('accuracy'),
+      completeness: avg('completeness'),
+      evidence: avg('evidence'),
+      freshness: avg('freshness'),
+      overall: avg('overall'),
+      totalCostUsd: active.reduce((a, s) => a + (s.costUsd || 0), 0),
+      avgLatencyMs: (() => {
+        const xs = active.map((s) => s.latencyMs).filter((x) => x != null);
+        return xs.length ? xs.reduce((a, b) => a + b, 0) / xs.length : null;
+      })(),
+      measuredOnly: true,
+      reliabilityClaim: null,
+      note: 'Overall is a weighted blend of measured dimensions. It is not a generalized reliability certification.',
+    };
+  });
+
+  const leaderboard = [...providerResults]
+    .sort((a, b) => {
+      if (b.overall !== a.overall) return b.overall - a.overall;
+      const ca = a.totalCostUsd ?? Infinity;
+      const cb = b.totalCostUsd ?? Infinity;
+      if (ca !== cb) return ca - cb;
+      const la = a.avgLatencyMs ?? Infinity;
+      const lb = b.avgLatencyMs ?? Infinity;
+      return la - lb;
     })
-    .sort(
-      (a, b) =>
-        b.scores.overall - a.scores.overall ||
-        (a.averageCostUsd ?? Infinity) - (b.averageCostUsd ?? Infinity) ||
-        (a.averageLatencyMs ?? Infinity) - (b.averageLatencyMs ?? Infinity),
-    );
+    .map((p, i) => ({
+      rank: i + 1,
+      providerId: p.providerId,
+      overall: p.overall,
+      accuracy: p.accuracy,
+      completeness: p.completeness,
+      evidence: p.evidence,
+      freshness: p.freshness,
+      totalCostUsd: p.totalCostUsd,
+      avgLatencyMs: p.avgLatencyMs,
+      disclaimer: 'Rank reflects this run only. Not a production reliability certification.',
+    }));
 
   return {
-    benchmarkId: benchmark.id,
+    runId: run.id,
     evaluatedAt: evaluatedAt.toISOString(),
-    mode: options.mode ?? 'fixture_or_adapter',
-    results,
-    leaderboard,
     weights: WEIGHTS,
-    reproducibility: {
-      note: 'Scores are deterministic given the same benchmark claims, response payloads, and evaluatedAt timestamp.',
-      responseHashes: results.map((r) => ({ providerId: r.providerId, responseHash: r.responseHash })),
-    },
+    realCaseCount: realBenchmarks.length,
+    syntheticExcluded: run.benchmarks.length - realBenchmarks.length,
+    providers: providerResults,
+    leaderboard,
+    responseHash: hashPayload({ runId: run.id, providers: providerResults }),
   };
 }
 
-export { WEIGHTS, scoreCase, evaluateRun, hashPayload, compare, normalize };
+export default { scoreCase, evaluateRun, compare, hashPayload, WEIGHTS, FailureCode };
