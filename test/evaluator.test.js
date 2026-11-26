@@ -1,7 +1,10 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
+import { readFile } from 'node:fs/promises';
+import { fileURLToPath } from 'node:url';
 import { scoreCase, evaluateRun, compare, FailureCode, WEIGHTS } from '../src/evaluator.js';
 
+const root = new URL('../', import.meta.url);
 const bench = {
   id: 'c1',
   kind: 'real_reference',
@@ -19,17 +22,13 @@ test('compare treats empty as non-match', () => {
 
 test('scoreCase rewards correct claims with evidence', () => {
   const now = new Date('2026-11-26T12:00:00Z');
-  const res = scoreCase(
-    bench,
-    {
-      claims: { legal_name: 'OPENAI UK LTD', active: true },
-      evidence: {
-        legal_name: [{ source: 'https://ch.gov.uk', observedAt: '2026-11-26T10:00:00Z', contentHash: 'abc' }],
-        active: [{ source: 'https://ch.gov.uk', observedAt: '2026-11-26T10:00:00Z', contentHash: 'def' }],
-      },
+  const res = scoreCase(bench, {
+    claims: { legal_name: 'OPENAI UK LTD', active: true },
+    evidence: {
+      legal_name: [{ source: 'https://ch.gov.uk', observedAt: '2026-11-26T10:00:00Z', contentHash: 'abc' }],
+      active: [{ source: 'https://ch.gov.uk', observedAt: '2026-11-26T10:00:00Z', contentHash: 'def' }],
     },
-    now,
-  );
+  }, now);
   assert.equal(res.accuracy, 1);
   assert.equal(res.completeness, 1);
   assert.ok(res.evidence > 0.9);
@@ -38,11 +37,7 @@ test('scoreCase rewards correct claims with evidence', () => {
 });
 
 test('provider verified flag is ignored for correctness', () => {
-  const res = scoreCase(bench, {
-    claims: { legal_name: 'WRONG', active: false },
-    verified: true,
-    providerVerified: true,
-  });
+  const res = scoreCase(bench, { claims: { legal_name: 'WRONG', active: false }, verified: true, providerVerified: true });
   assert.equal(res.accuracy, 0);
   assert.equal(res.providerVerifiedIgnored, true);
 });
@@ -53,6 +48,13 @@ test('missing values are missing_value not correct', () => {
   assert.equal(res.accuracy, 0);
 });
 
+test('unsupported extra claims are surfaced without silently changing weighted score', () => {
+  const res = scoreCase(bench, { claims: { legal_name: 'OPENAI UK LTD', active: true, beneficial_owner: 'John Doe' } });
+  assert.deepEqual(res.unsupportedClaimKeys, ['beneficial_owner']);
+  assert.equal(res.unsupportedClaimCount, 1);
+  assert.ok(res.failureCodes.includes(FailureCode.UNSUPPORTED_CLAIM));
+});
+
 test('transport failure zeros scores', () => {
   const res = scoreCase(bench, { transportError: 'timeout' });
   assert.equal(res.failureCode, FailureCode.TRANSPORT_FAILURE);
@@ -60,10 +62,7 @@ test('transport failure zeros scores', () => {
 });
 
 test('synthetic cases are excluded', () => {
-  const res = scoreCase(
-    { ...bench, kind: 'synthetic_negative_control' },
-    { claims: { legal_name: 'OPENAI UK LTD', active: true } },
-  );
+  const res = scoreCase({ ...bench, kind: 'synthetic_negative_control' }, { claims: { legal_name: 'OPENAI UK LTD', active: true } });
   assert.equal(res.excluded, true);
   assert.equal(res.failureCode, FailureCode.SYNTHETIC_EXCLUDED);
 });
@@ -71,34 +70,20 @@ test('synthetic cases are excluded', () => {
 test('evaluateRun ranks by overall and excludes synthetic', () => {
   const run = {
     id: 'run-1',
-    benchmarks: [
-      bench,
-      { id: 'syn', kind: 'synthetic_negative_control', claims: [{ key: 'x', expected: 1, rule: 'exact' }] },
-    ],
+    benchmarks: [bench, { id: 'syn', kind: 'synthetic_negative_control', claims: [{ key: 'x', expected: 1, rule: 'exact' }] }],
     providers: [
-      {
-        id: 'a',
-        responses: {
-          c1: {
-            claims: { legal_name: 'OPENAI UK LTD', active: true },
-            evidence: {
-              legal_name: [{ source: 's', observedAt: '2026-11-26T11:00:00Z', contentHash: 'h1' }],
-              active: [{ source: 's', observedAt: '2026-11-26T11:00:00Z', contentHash: 'h2' }],
-            },
-            costUsd: 0.01,
-            latencyMs: 100,
-          },
-        },
-      },
-      {
-        id: 'b',
-        responses: { c1: { claims: { legal_name: 'NOPE', active: false }, costUsd: 0.01, latencyMs: 50 } },
-      },
+      { id: 'a', responses: { c1: { claims: { legal_name: 'OPENAI UK LTD', active: true, invented_risk_score: 99 }, evidence: {
+        legal_name: [{ source: 's', observedAt: '2026-11-26T11:00:00Z', contentHash: 'h1' }],
+        active: [{ source: 's', observedAt: '2026-11-26T11:00:00Z', contentHash: 'h2' }],
+      }, costUsd: 0.01, latencyMs: 100 } } },
+      { id: 'b', responses: { c1: { claims: { legal_name: 'NOPE', active: false }, costUsd: 0.01, latencyMs: 50 } } },
     ],
   };
   const out = evaluateRun(run, new Date('2026-11-26T12:00:00Z'));
   assert.equal(out.syntheticExcluded, 1);
   assert.equal(out.leaderboard[0].providerId, 'a');
+  assert.equal(out.providers[0].unsupportedClaimCount, 1);
+  assert.deepEqual(out.providers[0].unsupportedClaimKeys, ['invented_risk_score']);
   assert.match(out.leaderboard[0].disclaimer, /not a production reliability/i);
 });
 
@@ -109,4 +94,20 @@ test('evaluateRun rejects missing id', () => {
 test('weights sum to 1', () => {
   const s = Object.values(WEIGHTS).reduce((a, b) => a + b, 0);
   assert.ok(Math.abs(s - 1) < 1e-9);
+});
+
+test('held-out adversarial set is separate and has no entity overlap with training', async () => {
+  const [trainingText, heldoutText] = await Promise.all([
+    readFile(new URL('../benchmarks/real/corporate-registry-v2.json', root), 'utf8'),
+    readFile(new URL('../benchmarks/heldout/corporate-registry-adversarial-v1.json', root), 'utf8'),
+  ]);
+  const training = JSON.parse(trainingText);
+  const heldout = JSON.parse(heldoutText);
+  const trainingIds = new Set(training.cases.map((c) => String(c.params.company)));
+  assert.equal(heldout.split, 'held_out');
+  assert.equal(heldout.cases.length, 6);
+  assert.ok(heldout.cases.every((c) => !trainingIds.has(String(c.params.company))));
+  assert.ok(heldout.cases.every((c) => c.reference.independentlyReviewed && c.reference.sourceUrl));
+  assert.ok(heldout.cases.some((c) => c.reference.statusNuance));
+  assert.ok(heldout.cases.some((c) => (c.reference.previousNames || []).length > 0));
 });
