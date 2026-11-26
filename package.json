@@ -6,8 +6,8 @@
   "description": "Independent Telegraph Intelligence Reliability Evaluator — reproducible commercial benchmarks for miner factual accuracy, evidence quality, freshness, latency and cost.",
   "scripts": {
     "test": "node --test test/evaluator.test.js test/adapter.test.js",
-    "test:live": "node --test test/live/",
-    "test:all": "node --test test/",
+    "test:live": "node --test test/live/discovery.test.js",
+    "test:all": "node --test test/evaluator.test.js test/adapter.test.js test/live/discovery.test.js",
     "evaluate:demo": "node src/cli.js fixtures/synthetic/demo-run.json",
     "evaluate": "node src/cli.js",
     "discover": "node src/cli-discover.js",
