@@ -1,0 +1,312 @@
+{
+  "id": "corporate-registry-heldout-adversarial-v1",
+  "intent": "CORPORATE_REGISTRY_LOOKUP_GENERAL",
+  "title": "Entity-held-out adversarial registry evaluation set",
+  "version": "1.0.0",
+  "split": "held_out",
+  "training_exclusion": "These six company numbers are absent from benchmarks/real/corporate-registry-v2.json and training/corporate-registry-pairs.jsonl. Do not merge this file into preference-pair training.",
+  "note": "Official Companies House pages. Designed to test exact identifier resolution, legal-name changes, similar-name collisions, and status nuance. This is a small challenge set, not a statistically representative benchmark.",
+  "cases": [
+    {
+      "id": "heldout-ch-a-legal-13854585",
+      "kind": "heldout_real_reference",
+      "jurisdiction": "GB",
+      "params": {
+        "company": "13854585",
+        "jurisdiction": "GB"
+      },
+      "claims": [
+        {
+          "key": "legal_name",
+          "expected": "A-LEGAL LIMITED",
+          "rule": "case_insensitive"
+        },
+        {
+          "key": "registration_id",
+          "expected": "13854585",
+          "rule": "exact"
+        },
+        {
+          "key": "jurisdiction",
+          "expected": "GB",
+          "rule": "exact"
+        },
+        {
+          "key": "active",
+          "expected": true,
+          "rule": "exact"
+        },
+        {
+          "key": "status",
+          "expected": "Active",
+          "rule": "case_insensitive"
+        }
+      ],
+      "challenge": "Resolve by company number, not by approximate name. Do not confuse this entity with similarly named legal-services companies.",
+      "reference": {
+        "sourceName": "Companies House",
+        "sourceUrl": "https://find-and-update.company-information.service.gov.uk/company/13854585",
+        "reviewedOn": "2026-11-27",
+        "independentlyReviewed": true,
+        "synthetic": false
+      }
+    },
+    {
+      "id": "heldout-ch-act-legal-04449603",
+      "kind": "heldout_real_reference",
+      "jurisdiction": "GB",
+      "params": {
+        "company": "04449603",
+        "jurisdiction": "GB"
+      },
+      "claims": [
+        {
+          "key": "legal_name",
+          "expected": "ACT LEGAL LTD",
+          "rule": "case_insensitive"
+        },
+        {
+          "key": "registration_id",
+          "expected": "04449603",
+          "rule": "exact"
+        },
+        {
+          "key": "jurisdiction",
+          "expected": "GB",
+          "rule": "exact"
+        },
+        {
+          "key": "active",
+          "expected": true,
+          "rule": "exact"
+        },
+        {
+          "key": "status",
+          "expected": "Active",
+          "rule": "case_insensitive"
+        }
+      ],
+      "challenge": "Distinguish current legal name from historical names. Historical names must not be returned as the current legal name.",
+      "reference": {
+        "sourceName": "Companies House",
+        "sourceUrl": "https://find-and-update.company-information.service.gov.uk/company/04449603",
+        "reviewedOn": "2026-11-27",
+        "independentlyReviewed": true,
+        "synthetic": false,
+        "previousNames": [
+          {
+            "name": "WHITEFIELDS (BIDCO) LIMITED",
+            "from": "2026-01-05",
+            "to": "2026-10-29"
+          },
+          {
+            "name": "ACT LEGAL LTD.",
+            "from": "2004-12-23",
+            "to": "2026-01-05"
+          },
+          {
+            "name": "ACT CONVEYANCING LIMITED",
+            "from": "2002-05-28",
+            "to": "2004-12-23"
+          }
+        ]
+      }
+    },
+    {
+      "id": "heldout-ch-legal-active-08641184",
+      "kind": "heldout_real_reference",
+      "jurisdiction": "GB",
+      "params": {
+        "company": "08641184",
+        "jurisdiction": "GB"
+      },
+      "claims": [
+        {
+          "key": "legal_name",
+          "expected": "LEGAL ACTIVE LTD",
+          "rule": "case_insensitive"
+        },
+        {
+          "key": "registration_id",
+          "expected": "08641184",
+          "rule": "exact"
+        },
+        {
+          "key": "jurisdiction",
+          "expected": "GB",
+          "rule": "exact"
+        },
+        {
+          "key": "active",
+          "expected": true,
+          "rule": "exact"
+        },
+        {
+          "key": "status",
+          "expected": "Active — Active proposal to strike off",
+          "rule": "case_insensitive"
+        }
+      ],
+      "challenge": "Do not collapse the registry's active status and its active proposal to strike off into a generic good-standing claim. Preserve the full status nuance.",
+      "reference": {
+        "sourceName": "Companies House",
+        "sourceUrl": "https://find-and-update.company-information.service.gov.uk/company/08641184",
+        "reviewedOn": "2026-11-27",
+        "independentlyReviewed": true,
+        "synthetic": false,
+        "statusNuance": "Active — Active proposal to strike off"
+      }
+    },
+    {
+      "id": "heldout-ch-legal-professional-13890213",
+      "kind": "heldout_real_reference",
+      "jurisdiction": "GB",
+      "params": {
+        "company": "13890213",
+        "jurisdiction": "GB"
+      },
+      "claims": [
+        {
+          "key": "legal_name",
+          "expected": "LEGAL AND PROFESSIONAL SERVICES LIMITED",
+          "rule": "case_insensitive"
+        },
+        {
+          "key": "registration_id",
+          "expected": "13890213",
+          "rule": "exact"
+        },
+        {
+          "key": "jurisdiction",
+          "expected": "GB",
+          "rule": "exact"
+        },
+        {
+          "key": "active",
+          "expected": true,
+          "rule": "exact"
+        },
+        {
+          "key": "status",
+          "expected": "Active",
+          "rule": "case_insensitive"
+        }
+      ],
+      "challenge": "The company has former names. Do not mistake a former name for the current registered name.",
+      "reference": {
+        "sourceName": "Companies House",
+        "sourceUrl": "https://find-and-update.company-information.service.gov.uk/company/13890213",
+        "reviewedOn": "2026-11-27",
+        "independentlyReviewed": true,
+        "synthetic": false,
+        "previousNames": [
+          {
+            "name": "QS LEGAL LIMITED",
+            "from": "2022-11-21",
+            "to": "2024-03-15"
+          },
+          {
+            "name": "LAWYER FOR LIFE LIMITED",
+            "from": "2022-02-03",
+            "to": "2022-11-21"
+          }
+        ]
+      }
+    },
+    {
+      "id": "heldout-ch-legal-tax-08495253",
+      "kind": "heldout_real_reference",
+      "jurisdiction": "GB",
+      "params": {
+        "company": "08495253",
+        "jurisdiction": "GB"
+      },
+      "claims": [
+        {
+          "key": "legal_name",
+          "expected": "LEGAL AND TAX COMPANY LTD",
+          "rule": "case_insensitive"
+        },
+        {
+          "key": "registration_id",
+          "expected": "08495253",
+          "rule": "exact"
+        },
+        {
+          "key": "jurisdiction",
+          "expected": "GB",
+          "rule": "exact"
+        },
+        {
+          "key": "active",
+          "expected": true,
+          "rule": "exact"
+        },
+        {
+          "key": "status",
+          "expected": "Active",
+          "rule": "case_insensitive"
+        }
+      ],
+      "challenge": "Resolve the exact registry number. Similar names and shared legal-services terms are not sufficient identity evidence.",
+      "reference": {
+        "sourceName": "Companies House",
+        "sourceUrl": "https://find-and-update.company-information.service.gov.uk/company/08495253",
+        "reviewedOn": "2026-11-27",
+        "independentlyReviewed": true,
+        "synthetic": false
+      }
+    },
+    {
+      "id": "heldout-ch-0x-legal-13393883",
+      "kind": "heldout_real_reference",
+      "jurisdiction": "GB",
+      "params": {
+        "company": "13393883",
+        "jurisdiction": "GB"
+      },
+      "claims": [
+        {
+          "key": "legal_name",
+          "expected": "0X LEGAL LTD",
+          "rule": "case_insensitive"
+        },
+        {
+          "key": "registration_id",
+          "expected": "13393883",
+          "rule": "exact"
+        },
+        {
+          "key": "jurisdiction",
+          "expected": "GB",
+          "rule": "exact"
+        },
+        {
+          "key": "active",
+          "expected": true,
+          "rule": "exact"
+        },
+        {
+          "key": "status",
+          "expected": "Active",
+          "rule": "case_insensitive"
+        }
+      ],
+      "challenge": "Preserve the leading zero-character pattern in the registered name. Do not return the previous name as current identity.",
+      "reference": {
+        "sourceName": "Companies House",
+        "sourceUrl": "https://find-and-update.company-information.service.gov.uk/company/13393883",
+        "reviewedOn": "2026-11-27",
+        "independentlyReviewed": true,
+        "synthetic": false,
+        "previousNames": [
+          {
+            "name": "MFV CONSULTANCY LTD",
+            "from": "2021-05-13",
+            "to": "2025-09-05"
+          }
+        ]
+      }
+    }
+  ]
+}
