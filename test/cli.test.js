@@ -16,7 +16,7 @@ test('JSON CLI normalises legacy fixture input and excludes synthetic scores', a
   assert.equal(report.realCaseCount, 0);
   assert.equal(report.syntheticExcluded, 1);
   assert.equal(report.providers.length, 2);
-  assert.ok(report.providers.every((provider) => provider.caseScores[0].excluded));
+  assert.ok(report.providers.every((provider) => provider.caseScores.length === 0));
 });
 
 test('HTML report renders current evaluator result shape', async () => {
@@ -27,7 +27,7 @@ test('HTML report renders current evaluator result shape', async () => {
     const html = await readFile(output, 'utf8');
     assert.match(html, /SYNTHETIC FIXTURE RESULTS/);
     assert.match(html, /miner-alpha-demo/);
-    assert.match(html, /Excluded synthetic control/);
+    assert.match(html, /Synthetic excluded: 1/);
     assert.match(html, /not a general reliability certification/i);
   } finally {
     await rm(dir, { recursive: true, force: true });
