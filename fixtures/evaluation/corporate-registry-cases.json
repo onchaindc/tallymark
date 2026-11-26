@@ -1,0 +1,131 @@
+{
+  "id": "corporate-registry-eval-v1",
+  "intent": "CORPORATE_REGISTRY_LOOKUP_GENERAL",
+  "title": "Corporate registry evaluation cases (real CH + labelled controls)",
+  "note": "Real-reference cases are scored only after actual paid miner responses exist. Synthetic controls must not be mixed into published real scores.",
+  "cases": [
+    {
+      "id": "ch-openai-uk-14367667",
+      "kind": "real_reference",
+      "company_number": "14367667",
+      "params": { "company": "14367667", "jurisdiction": "GB" },
+      "claims": [
+        { "key": "legal_name", "expected": "OPENAI UK LTD", "rule": "case_insensitive" },
+        { "key": "registration_id", "expected": "14367667", "rule": "exact" },
+        { "key": "jurisdiction", "expected": "GB", "rule": "exact" },
+        { "key": "active", "expected": true, "rule": "exact" },
+        { "key": "status", "expected": "active", "rule": "case_insensitive" }
+      ],
+      "reference": {
+        "sourceName": "Companies House — OPENAI UK LTD overview",
+        "sourceUrl": "https://find-and-update.company-information.service.gov.uk/company/14367667",
+        "retrievedAt": "2026-11-26T20:20:00.000Z",
+        "independentlyReviewed": true,
+        "synthetic": false,
+        "companyType": "Private limited Company",
+        "incorporatedOn": "2022-09-21"
+      }
+    },
+    {
+      "id": "ch-deepmind-07386350",
+      "kind": "real_reference",
+      "company_number": "07386350",
+      "params": { "company": "07386350", "jurisdiction": "GB" },
+      "claims": [
+        { "key": "legal_name", "expected": "DEEPMIND TECHNOLOGIES LIMITED", "rule": "case_insensitive" },
+        { "key": "registration_id", "expected": "07386350", "rule": "exact" },
+        { "key": "jurisdiction", "expected": "GB", "rule": "exact" },
+        { "key": "active", "expected": true, "rule": "exact" },
+        { "key": "status", "expected": "active", "rule": "case_insensitive" }
+      ],
+      "reference": {
+        "sourceName": "Companies House — DEEPMIND TECHNOLOGIES LIMITED overview",
+        "sourceUrl": "https://find-and-update.company-information.service.gov.uk/company/07386350",
+        "retrievedAt": "2026-11-26T20:20:00.000Z",
+        "independentlyReviewed": true,
+        "synthetic": false,
+        "companyType": "Private limited Company",
+        "incorporatedOn": "2010-09-23"
+      }
+    },
+    {
+      "id": "ch-bbc-commercial-04463534",
+      "kind": "real_reference",
+      "company_number": "04463534",
+      "params": { "company": "04463534", "jurisdiction": "GB" },
+      "claims": [
+        { "key": "legal_name", "expected": "BBC COMMERCIAL LIMITED", "rule": "case_insensitive" },
+        { "key": "registration_id", "expected": "04463534", "rule": "exact" },
+        { "key": "jurisdiction", "expected": "GB", "rule": "exact" },
+        { "key": "active", "expected": true, "rule": "exact" },
+        { "key": "status", "expected": "active", "rule": "case_insensitive" }
+      ],
+      "reference": {
+        "sourceName": "Companies House — BBC COMMERCIAL LIMITED overview",
+        "sourceUrl": "https://find-and-update.company-information.service.gov.uk/company/04463534",
+        "retrievedAt": "2026-11-26T20:20:00.000Z",
+        "independentlyReviewed": true,
+        "synthetic": false,
+        "companyType": "Private limited Company",
+        "incorporatedOn": "2002-06-18",
+        "previousNames": ["BBC COMMERCIAL HOLDINGS LIMITED", "FFW 1979 LIMITED"]
+      }
+    },
+    {
+      "id": "ch-dissolved-03877937",
+      "kind": "real_reference",
+      "company_number": "03877937",
+      "params": { "company": "03877937", "jurisdiction": "GB" },
+      "claims": [
+        { "key": "legal_name", "expected": "THE PULVER CARR PARTNERSHIP LIMITED", "rule": "case_insensitive" },
+        { "key": "registration_id", "expected": "03877937", "rule": "exact" },
+        { "key": "jurisdiction", "expected": "GB", "rule": "exact" },
+        { "key": "active", "expected": false, "rule": "exact" },
+        { "key": "status", "expected": "dissolved", "rule": "case_insensitive" }
+      ],
+      "reference": {
+        "sourceName": "Companies House — THE PULVER CARR PARTNERSHIP LIMITED overview",
+        "sourceUrl": "https://find-and-update.company-information.service.gov.uk/company/03877937",
+        "retrievedAt": "2026-11-26T20:20:00.000Z",
+        "independentlyReviewed": true,
+        "synthetic": false,
+        "companyType": "Private limited Company",
+        "incorporatedOn": "1999-11-16",
+        "dissolvedOn": "2025-03-05"
+      }
+    },
+    {
+      "id": "ch-missing-99999999",
+      "kind": "synthetic_negative_control",
+      "company_number": "99999999",
+      "params": { "company": "99999999", "jurisdiction": "GB" },
+      "claims": [
+        { "key": "active", "expected": false, "rule": "exact" },
+        { "key": "status", "expected": "not_found", "rule": "case_insensitive" }
+      ],
+      "reference": {
+        "sourceName": "Synthetic negative control — number reserved for tests",
+        "sourceUrl": null,
+        "retrievedAt": "2026-11-26T00:00:00.000Z",
+        "independentlyReviewed": true,
+        "synthetic": true
+      }
+    },
+    {
+      "id": "ch-conflict-fixture",
+      "kind": "synthetic_conflict_control",
+      "company_number": "00000000",
+      "params": { "company": "00000000", "jurisdiction": "GB" },
+      "claims": [
+        { "key": "conflict_detected", "expected": true, "rule": "exact" }
+      ],
+      "reference": {
+        "sourceName": "Synthetic conflict fixture",
+        "sourceUrl": null,
+        "retrievedAt": "2026-11-26T00:00:00.000Z",
+        "independentlyReviewed": false,
+        "synthetic": true
+      }
+    }
+  ]
+}
