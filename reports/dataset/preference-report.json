@@ -35,5 +35,22 @@
     "Nineteen entities support the corpus across GB Companies House and US SEC EDGAR; broader jurisdiction coverage and entity-held-out evaluation remain necessary.",
     "SEC active=true denotes a current EDGAR registrant evidenced by recent filings, not a Companies House-style corporate status field.",
     "No model training, export, packaging, runnable endpoint, registration, or on-chain action has been performed."
-  ]
+  ],
+  "heldout_evaluation": {
+    "file": "benchmarks/heldout/corporate-registry-adversarial-v1.json",
+    "entity_count": 6,
+    "split": "held_out",
+    "entity_overlap_with_training": 0,
+    "scenarios": [
+      "exact registration identifier resolution",
+      "similar-name collision resistance",
+      "current versus former legal names",
+      "active proposal to strike off status nuance"
+    ],
+    "validation": "structural split test passes; no live Miner response scoring performed"
+  },
+  "evaluator_hardening": {
+    "unsupported_extra_claims": "reported separately at case and provider level",
+    "weighted_score_changed": false
+  }
 }

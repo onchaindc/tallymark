@@ -33,6 +33,10 @@ TALLYMARK is an independent evaluator and benchmarking system. It is not itself 
 - [Security](#security)
 - [License](#license)
 
+## Evaluator-track submission
+
+See [SUBMISSION.md](SUBMISSION.md) for the exact evaluation-material package, reproduction commands, provenance disclosures, and the remaining requirements for an on-protocol judgment adapter.
+
 ## Why TALLYMARK exists
 
 A successful API response is not the same thing as a correct answer.
@@ -65,13 +69,15 @@ The benchmark checks structured corporate identity and registry claims such as:
 - Active/inactive state
 - Registry status
 
-The current real-reference dataset contains eight cases:
+The current real-reference training benchmark contains 19 entities (15 Companies House GB, 4 SEC EDGAR US) and is kept separate from a six-entity held-out adversarial evaluation set:
 
 | Reference source | Jurisdiction | Cases |
 |---|---:|---:|
-| Companies House | United Kingdom (GB) | 6 |
-| SEC EDGAR | United States (US) | 2 |
-| **Total** | | **8** |
+| Companies House | United Kingdom (GB) | 15 |
+| SEC EDGAR | United States (US) | 4 |
+| **Training total** | | **19** |
+
+The held-out set is `benchmarks/heldout/corporate-registry-adversarial-v1.json` and contains six different UK entities. It tests exact identifier resolution, historical legal names, similar-name collisions, and the distinction between an active registration and an active proposal to strike off. It is not included in training.
 
 The cases include active and dissolved entities. Synthetic negative and conflict controls are maintained separately and are excluded from published real-reference scores.
 
@@ -114,7 +120,8 @@ Its responsibilities include:
 
 - Normalizing values before comparison where the rule permits it.
 - Evaluating each expected claim.
-- Identifying missing and incorrect values.
+- Identifying missing, incorrect, and unsupported extra claims.
+- Reporting unsupported response keys separately without silently changing the weighted score.
 - Checking whether evidence records contain required fields.
 - Evaluating evidence age against a case-specific or default freshness window.
 - Excluding synthetic controls from real-reference scores.
@@ -336,11 +343,13 @@ The report therefore marks results as measured-only and avoids generalized relia
 
 ### Real-reference cases
 
-The current v2 real-reference dataset is:
+The current v2 real-reference training dataset is:
 
 `benchmarks/real/corporate-registry-v2.json`
 
-It contains six Companies House cases and two SEC EDGAR cases. Each case includes:
+The preference corpus is 265 LLM-constructed counterfactual pairs, explicitly marked unverified. It passes the pinned Telegraph trainer data gate, but it is not observed Miner data and does not demonstrate model quality. See [training/DATASET_CARD.md](training/DATASET_CARD.md) and [reports/dataset/preference-report.json](reports/dataset/preference-report.json).
+
+It contains 19 training entities (15 Companies House and 4 SEC EDGAR). A separate six-entity held-out adversarial set is maintained at `benchmarks/heldout/corporate-registry-adversarial-v1.json` and is excluded from preference-pair generation. Each case includes:
 
 - A stable case identifier.
 - A jurisdiction.
@@ -352,7 +361,11 @@ It contains six Companies House cases and two SEC EDGAR cases. Each case include
 - An explicit synthetic/non-synthetic marker.
 - An independent-review marker.
 
-### Synthetic controls
+### Held-out adversarial evaluation
+
+The six-entity held-out set is deliberately excluded from training. It covers historical legal names, near-name ambiguity, and status nuance. Run its structural split checks with `npm run test:heldout`. It has not yet been used to score live Miner responses.
+
+## Synthetic controls
 
 Synthetic negative and conflict fixtures live under:
 

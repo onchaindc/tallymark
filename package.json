@@ -5,7 +5,8 @@
   "type": "module",
   "description": "Independent Telegraph Intelligence Reliability Evaluator — claim-level scoring against authoritative references.",
   "scripts": {
-    "test": "node --test test/evaluator.test.js test/adapter.test.js test/payment/x402.test.js test/payment/handler.test.js test/payment/gas.test.js",
+    "test": "node --test test/evaluator.test.js test/heldout.test.js test/adapter.test.js test/payment/x402.test.js test/payment/handler.test.js test/payment/gas.test.js",
+    "test:heldout": "node --test test/heldout.test.js",
     "test:live": "node --test test/live/discovery.test.js",
     "test:all": "npm test && npm run test:live",
     "evaluate:demo": "node src/cli.js fixtures/synthetic/demo-run.json",
@@ -17,12 +18,20 @@
     "report:html": "node src/report-html.js fixtures/synthetic/demo-run.json reports/demo-report.html",
     "build": "node -e \"console.log('tallymark pure-JS build: ok')\""
   },
-  "engines": { "node": ">=20" },
+  "engines": {
+    "node": ">=20"
+  },
   "optionalDependencies": {
     "viem": "^2.32.0",
     "@x402/core": "^2.32.0",
     "@x402/evm": "^2.32.0"
   },
-  "keywords": ["telegraph", "evaluator", "benchmark", "corporate-registry", "x402"],
+  "keywords": [
+    "telegraph",
+    "evaluator",
+    "benchmark",
+    "corporate-registry",
+    "x402"
+  ],
   "license": "MIT"
 }
