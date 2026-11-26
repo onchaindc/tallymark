@@ -219,12 +219,13 @@ export function evaluateRun(run, evaluatedAt = new Date()) {
     });
     const active = caseScores.filter((s) => !s.excluded);
     const avg = (key) =>
-      active.length ? active.reduce((a, s) => a + (Number(s[key]) || 0), 0) / active.length : 0;
+      active.length ? active.reduce((a, s) => a + (Number(s[key]) || 0), 0) / active.length : null;
 
     return {
       providerId: provider.id,
       providerName: provider.name ?? provider.id,
       caseScores,
+      measuredCaseCount: active.length,
       accuracy: avg('accuracy'),
       completeness: avg('completeness'),
       evidence: avg('evidence'),
@@ -243,7 +244,8 @@ export function evaluateRun(run, evaluatedAt = new Date()) {
     };
   });
 
-  const leaderboard = [...providerResults]
+  const leaderboard = providerResults
+    .filter((provider) => provider.measuredCaseCount > 0)
     .sort((a, b) => {
       if (b.overall !== a.overall) return b.overall - a.overall;
       const ca = a.totalCostUsd ?? Infinity;
