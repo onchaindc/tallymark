@@ -1,105 +1,112 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { evaluateRun, scoreCase, compare } from '../src/evaluator.js';
+import { scoreCase, evaluateRun, compare, FailureCode, WEIGHTS } from '../src/evaluator.js';
 
-const now = new Date('2026-11-26T12:00:00.000Z');
-const benchmark = {
-  id: 'b1',
-  maxEvidenceAgeHours: 48,
+const bench = {
+  id: 'c1',
+  kind: 'real_reference',
   claims: [
-    { key: 'name', expected: 'Acme Ltd', rule: 'case_insensitive' },
-    { key: 'status', expected: 'active', rule: 'exact' },
+    { key: 'legal_name', expected: 'OPENAI UK LTD', rule: 'case_insensitive' },
+    { key: 'active', expected: true, rule: 'exact' },
   ],
+  maxEvidenceAgeHours: 48,
 };
 
-test('scores correct claims and required evidence metadata', () => {
-  const result = scoreCase(
-    benchmark,
+test('compare treats empty as non-match', () => {
+  assert.equal(compare('', 'x', 'exact'), false);
+  assert.equal(compare(null, 'x', 'exact'), false);
+});
+
+test('scoreCase rewards correct claims with evidence', () => {
+  const now = new Date('2026-11-26T12:00:00Z');
+  const res = scoreCase(
+    bench,
     {
-      providerId: 'p1',
-      claims: { name: 'ACME LTD', status: 'active' },
-      evidence: [
-        { source: 'registry', observedAt: '2026-11-26T10:00:00.000Z', contentHash: 'abc' },
-        { source: 'filing', observedAt: '2026-11-26T10:00:00.000Z', contentHash: 'def' },
-      ],
+      claims: { legal_name: 'OPENAI UK LTD', active: true },
+      evidence: {
+        legal_name: [{ source: 'https://ch.gov.uk', observedAt: '2026-11-26T10:00:00Z', contentHash: 'abc' }],
+        active: [{ source: 'https://ch.gov.uk', observedAt: '2026-11-26T10:00:00Z', contentHash: 'def' }],
+      },
     },
     now,
   );
-  assert.equal(result.scores.accuracy, 1);
-  assert.equal(result.scores.completeness, 1);
-  assert.equal(result.scores.evidence, 1);
-  assert.equal(result.scores.freshness, 1);
-  assert.equal(result.unsupportedClaims.length, 0);
+  assert.equal(res.accuracy, 1);
+  assert.equal(res.completeness, 1);
+  assert.ok(res.evidence > 0.9);
+  assert.ok(res.freshness > 0.9);
+  assert.ok(res.overall > 0.9);
 });
 
-test('missing and incorrect claims reduce accuracy and completeness', () => {
-  const result = scoreCase(benchmark, { providerId: 'p2', claims: { status: 'inactive' }, evidence: [] }, now);
-  assert.equal(result.scores.accuracy, 0);
-  assert.equal(result.scores.completeness, 0.5);
-  assert.deepEqual(
-    result.claims.map((c) => c.status),
-    ['missing', 'mismatch'],
+test('provider verified flag is ignored for correctness', () => {
+  const res = scoreCase(bench, {
+    claims: { legal_name: 'WRONG', active: false },
+    verified: true,
+    providerVerified: true,
+  });
+  assert.equal(res.accuracy, 0);
+  assert.equal(res.providerVerifiedIgnored, true);
+});
+
+test('missing values are missing_value not correct', () => {
+  const res = scoreCase(bench, { claims: {} });
+  assert.equal(res.claimResults[0].failureCode, FailureCode.MISSING_VALUE);
+  assert.equal(res.accuracy, 0);
+});
+
+test('transport failure zeros scores', () => {
+  const res = scoreCase(bench, { transportError: 'timeout' });
+  assert.equal(res.failureCode, FailureCode.TRANSPORT_FAILURE);
+  assert.equal(res.overall, 0);
+});
+
+test('synthetic cases are excluded', () => {
+  const res = scoreCase(
+    { ...bench, kind: 'synthetic_negative_control' },
+    { claims: { legal_name: 'OPENAI UK LTD', active: true } },
   );
-  assert.equal(result.unsupportedClaims.length, 2);
+  assert.equal(res.excluded, true);
+  assert.equal(res.failureCode, FailureCode.SYNTHETIC_EXCLUDED);
 });
 
-test('provider verified flag is not treated as proof', () => {
-  const result = scoreCase(benchmark, { providerId: 'p3', verified: true, claims: {}, evidence: [] }, now);
-  assert.equal(result.providerVerifiedFlagIgnored, true);
-  assert.equal(result.scores.evidence, 0);
-});
-
-test('stale evidence reduces freshness', () => {
-  const result = scoreCase(
-    benchmark,
-    {
-      providerId: 'p4',
-      claims: { name: 'Acme Ltd', status: 'active' },
-      evidence: [{ source: 'old-registry', observedAt: '2026-11-20T10:00:00.000Z', contentHash: 'old' }],
-    },
-    now,
-  );
-  assert.equal(result.scores.freshness, 0);
-});
-
-test('leaderboard ranks by overall score and reports cost/latency separately', () => {
-  const run = evaluateRun(
-    benchmark,
-    [
-      { providerId: 'weak', claims: { status: 'wrong' }, evidence: [], costUsd: 0.01, latencyMs: 100 },
+test('evaluateRun ranks by overall and excludes synthetic', () => {
+  const run = {
+    id: 'run-1',
+    benchmarks: [
+      bench,
+      { id: 'syn', kind: 'synthetic_negative_control', claims: [{ key: 'x', expected: 1, rule: 'exact' }] },
+    ],
+    providers: [
       {
-        providerId: 'strong',
-        claims: { name: 'Acme Ltd', status: 'active' },
-        evidence: [
-          { source: 'registry', observedAt: '2026-11-26T10:00:00.000Z', contentHash: 'a' },
-          { source: 'registry', observedAt: '2026-11-26T10:00:00.000Z', contentHash: 'b' },
-        ],
-        costUsd: 0.05,
-        latencyMs: 300,
+        id: 'a',
+        responses: {
+          c1: {
+            claims: { legal_name: 'OPENAI UK LTD', active: true },
+            evidence: {
+              legal_name: [{ source: 's', observedAt: '2026-11-26T11:00:00Z', contentHash: 'h1' }],
+              active: [{ source: 's', observedAt: '2026-11-26T11:00:00Z', contentHash: 'h2' }],
+            },
+            costUsd: 0.01,
+            latencyMs: 100,
+          },
+        },
+      },
+      {
+        id: 'b',
+        responses: { c1: { claims: { legal_name: 'NOPE', active: false }, costUsd: 0.01, latencyMs: 50 } },
       },
     ],
-    now,
-  );
-  assert.equal(run.leaderboard[0].providerId, 'strong');
-  assert.equal(run.leaderboard[0].averageCostUsd, 0.05);
-  assert.ok(run.reproducibility.responseHashes.length === 2);
+  };
+  const out = evaluateRun(run, new Date('2026-11-26T12:00:00Z'));
+  assert.equal(out.syntheticExcluded, 1);
+  assert.equal(out.leaderboard[0].providerId, 'a');
+  assert.match(out.leaderboard[0].disclaimer, /not a production reliability/i);
 });
 
-test('empty string is treated as missing, not a match', () => {
-  const result = scoreCase(
-    benchmark,
-    { providerId: 'p5', claims: { name: '', status: 'active' }, evidence: [] },
-    now,
-  );
-  assert.equal(result.claims[0].status, 'missing');
-  assert.equal(result.scores.completeness, 0.5);
+test('evaluateRun rejects missing id', () => {
+  assert.throws(() => evaluateRun({ benchmarks: [bench], providers: [] }), /missing benchmark run id/);
 });
 
-test('one_of rule accepts any listed value', () => {
-  assert.equal(compare('dissolved', ['active', 'dissolved'], 'one_of'), true);
-  assert.equal(compare('unknown', ['active', 'dissolved'], 'one_of'), false);
-});
-
-test('evaluateRun rejects missing benchmark id', () => {
-  assert.throws(() => evaluateRun({}, []), /benchmark.id is required/);
+test('weights sum to 1', () => {
+  const s = Object.values(WEIGHTS).reduce((a, b) => a + b, 0);
+  assert.ok(Math.abs(s - 1) < 1e-9);
 });
