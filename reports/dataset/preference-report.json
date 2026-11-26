@@ -4,24 +4,24 @@
   "family": "CORPORATE_REGISTRY_LOOKUP",
   "dataset_file": "training/corporate-registry-pairs.jsonl",
   "generator": "training/build_preference_pairs.py",
-  "pair_count": 175,
-  "source_record_count": 13,
+  "pair_count": 265,
+  "source_record_count": 19,
   "source_kinds": [
     "llm"
   ],
   "observed_miner_transcripts": 0,
   "provenance_class": "unverified",
   "gate": {
-    "unique_rejected_frac": 0.886,
-    "top_rejected_share": 0.011,
+    "unique_rejected_frac": 0.955,
+    "top_rejected_share": 0.008,
     "identical_pairs": 0,
-    "length_shortcut_acc": 0.589,
-    "eval_negative_leak": 0.077,
-    "surface_probe_acc": 0.6,
+    "length_shortcut_acc": 0.615,
+    "eval_negative_leak": 0.051,
+    "surface_probe_acc": 0.569,
     "mean_chosen_chars": 96,
     "mean_rejected_chars": 96,
     "status": "PASS_OFFICIAL_PINNED_TRAINER",
-    "official_ci_run": "https://github.com/onchaindc/tallymark/actions/runs/45908191415",
+    "official_ci_run": "https://github.com/onchaindc/tallymark/actions/runs/45908332861",
     "trainer": "telegraphprotocol/telegraph-wasm-baseline@1ed063e2f0066cfaf0e124d66ec6a17b7a6121fd float_runtime.train_adapter --check-data"
   },
   "design_checks": {
@@ -32,7 +32,7 @@
   },
   "limitations": [
     "Pairs are LLM-constructed counterfactuals, not captured Miner transcripts or human-authored labels.",
-    "Only thirteen entities support the current corpus across GB Companies House and US SEC EDGAR; entity memorisation and jurisdiction coverage remain limitations.",
+    "Nineteen entities support the corpus across GB Companies House and US SEC EDGAR; broader jurisdiction coverage and entity-held-out evaluation remain necessary.",
     "SEC active=true denotes a current EDGAR registrant evidenced by recent filings, not a Companies House-style corporate status field.",
     "No model training, export, packaging, runnable endpoint, registration, or on-chain action has been performed."
   ]

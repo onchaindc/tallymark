@@ -2,7 +2,7 @@
   "id": "corporate-registry-real-v2",
   "intent": "CORPORATE_REGISTRY_LOOKUP_GENERAL",
   "title": "Expanded independent corporate registry references (real only)",
-  "version": "2.1.0",
+  "version": "2.2.0",
   "note": "All rows are independently sourced from official Companies House or SEC EDGAR entity pages. Synthetic controls live under fixtures/synthetic and must not be mixed into published real scores.",
   "cases": [
     {
@@ -550,6 +550,264 @@
         "synthetic": false,
         "cik": "0001045810",
         "ticker": "NVDA"
+      }
+    },
+    {
+      "id": "ch-stripe-08480771",
+      "kind": "real_reference",
+      "jurisdiction": "GB",
+      "params": {
+        "company": "08480771",
+        "jurisdiction": "GB"
+      },
+      "claims": [
+        {
+          "key": "legal_name",
+          "expected": "STRIPE PAYMENTS UK LTD",
+          "rule": "case_insensitive"
+        },
+        {
+          "key": "registration_id",
+          "expected": "08480771",
+          "rule": "exact"
+        },
+        {
+          "key": "jurisdiction",
+          "expected": "GB",
+          "rule": "exact"
+        },
+        {
+          "key": "active",
+          "expected": true,
+          "rule": "exact"
+        },
+        {
+          "key": "status",
+          "expected": "active",
+          "rule": "case_insensitive"
+        }
+      ],
+      "reference": {
+        "sourceName": "Companies House",
+        "sourceUrl": "https://find-and-update.company-information.service.gov.uk/company/08480771",
+        "retrievedAt": "2026-11-26T00:00:00.000Z",
+        "independentlyReviewed": true,
+        "synthetic": false
+      }
+    },
+    {
+      "id": "ch-salesforce-05094083",
+      "kind": "real_reference",
+      "jurisdiction": "GB",
+      "params": {
+        "company": "05094083",
+        "jurisdiction": "GB"
+      },
+      "claims": [
+        {
+          "key": "legal_name",
+          "expected": "SALESFORCE UK LIMITED",
+          "rule": "case_insensitive"
+        },
+        {
+          "key": "registration_id",
+          "expected": "05094083",
+          "rule": "exact"
+        },
+        {
+          "key": "jurisdiction",
+          "expected": "GB",
+          "rule": "exact"
+        },
+        {
+          "key": "active",
+          "expected": true,
+          "rule": "exact"
+        },
+        {
+          "key": "status",
+          "expected": "active",
+          "rule": "case_insensitive"
+        }
+      ],
+      "reference": {
+        "sourceName": "Companies House",
+        "sourceUrl": "https://find-and-update.company-information.service.gov.uk/company/05094083",
+        "retrievedAt": "2026-11-26T00:00:00.000Z",
+        "independentlyReviewed": true,
+        "synthetic": false
+      }
+    },
+    {
+      "id": "ch-nvidia-uk-03900676",
+      "kind": "real_reference",
+      "jurisdiction": "GB",
+      "params": {
+        "company": "03900676",
+        "jurisdiction": "GB"
+      },
+      "claims": [
+        {
+          "key": "legal_name",
+          "expected": "NVIDIA LTD",
+          "rule": "case_insensitive"
+        },
+        {
+          "key": "registration_id",
+          "expected": "03900676",
+          "rule": "exact"
+        },
+        {
+          "key": "jurisdiction",
+          "expected": "GB",
+          "rule": "exact"
+        },
+        {
+          "key": "active",
+          "expected": true,
+          "rule": "exact"
+        },
+        {
+          "key": "status",
+          "expected": "active",
+          "rule": "case_insensitive"
+        }
+      ],
+      "reference": {
+        "sourceName": "Companies House",
+        "sourceUrl": "https://find-and-update.company-information.service.gov.uk/company/03900676",
+        "retrievedAt": "2026-11-26T00:00:00.000Z",
+        "independentlyReviewed": true,
+        "synthetic": false
+      }
+    },
+    {
+      "id": "ch-spotify-06436047",
+      "kind": "real_reference",
+      "jurisdiction": "GB",
+      "params": {
+        "company": "06436047",
+        "jurisdiction": "GB"
+      },
+      "claims": [
+        {
+          "key": "legal_name",
+          "expected": "SPOTIFY LIMITED",
+          "rule": "case_insensitive"
+        },
+        {
+          "key": "registration_id",
+          "expected": "06436047",
+          "rule": "exact"
+        },
+        {
+          "key": "jurisdiction",
+          "expected": "GB",
+          "rule": "exact"
+        },
+        {
+          "key": "active",
+          "expected": true,
+          "rule": "exact"
+        },
+        {
+          "key": "status",
+          "expected": "active",
+          "rule": "case_insensitive"
+        }
+      ],
+      "reference": {
+        "sourceName": "Companies House",
+        "sourceUrl": "https://find-and-update.company-information.service.gov.uk/company/06436047",
+        "retrievedAt": "2026-11-26T00:00:00.000Z",
+        "independentlyReviewed": true,
+        "synthetic": false
+      }
+    },
+    {
+      "id": "ch-wise-payments-07209813",
+      "kind": "real_reference",
+      "jurisdiction": "GB",
+      "params": {
+        "company": "07209813",
+        "jurisdiction": "GB"
+      },
+      "claims": [
+        {
+          "key": "legal_name",
+          "expected": "WISE PAYMENTS LIMITED",
+          "rule": "case_insensitive"
+        },
+        {
+          "key": "registration_id",
+          "expected": "07209813",
+          "rule": "exact"
+        },
+        {
+          "key": "jurisdiction",
+          "expected": "GB",
+          "rule": "exact"
+        },
+        {
+          "key": "active",
+          "expected": true,
+          "rule": "exact"
+        },
+        {
+          "key": "status",
+          "expected": "active",
+          "rule": "case_insensitive"
+        }
+      ],
+      "reference": {
+        "sourceName": "Companies House",
+        "sourceUrl": "https://find-and-update.company-information.service.gov.uk/company/07209813",
+        "retrievedAt": "2026-11-26T00:00:00.000Z",
+        "independentlyReviewed": true,
+        "synthetic": false
+      }
+    },
+    {
+      "id": "ch-uber-britannia-08823469",
+      "kind": "real_reference",
+      "jurisdiction": "GB",
+      "params": {
+        "company": "08823469",
+        "jurisdiction": "GB"
+      },
+      "claims": [
+        {
+          "key": "legal_name",
+          "expected": "UBER BRITANNIA LIMITED",
+          "rule": "case_insensitive"
+        },
+        {
+          "key": "registration_id",
+          "expected": "08823469",
+          "rule": "exact"
+        },
+        {
+          "key": "jurisdiction",
+          "expected": "GB",
+          "rule": "exact"
+        },
+        {
+          "key": "active",
+          "expected": true,
+          "rule": "exact"
+        },
+        {
+          "key": "status",
+          "expected": "active",
+          "rule": "case_insensitive"
+        }
+      ],
+      "reference": {
+        "sourceName": "Companies House",
+        "sourceUrl": "https://find-and-update.company-information.service.gov.uk/company/08823469",
+        "retrievedAt": "2026-11-26T00:00:00.000Z",
+        "independentlyReviewed": true,
+        "synthetic": false
       }
     }
   ]
