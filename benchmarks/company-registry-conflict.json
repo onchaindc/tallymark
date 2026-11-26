@@ -1,0 +1,27 @@
+{
+  "id": "company-registry-conflict-v1",
+  "title": "Conflicting registry information detection",
+  "domain": "corporate_identity",
+  "description": "When sources disagree on status, the provider should surface the conflict rather than silently pick one. Benchmark expects an explicit conflict signal.",
+  "maxEvidenceAgeHours": 720,
+  "claims": [
+    { "key": "conflict_detected", "expected": true, "rule": "exact" },
+    { "key": "status_candidates", "expected": "active,dissolved", "rule": "contains" }
+  ],
+  "reference": {
+    "sourceName": "Synthetic conflict fixture for evaluator testing",
+    "sourceUrl": null,
+    "retrievedAt": "2026-11-26T00:00:00.000Z",
+    "independentlyReviewed": false,
+    "synthetic": true
+  },
+  "inputSchema": {
+    "type": "object",
+    "properties": {
+      "company_number": { "type": "string" },
+      "jurisdiction": { "type": "string" }
+    },
+    "required": ["company_number"]
+  },
+  "task": "Given a company whose registry mirrors disagree, return conflict_detected=true and list the competing status values."
+}

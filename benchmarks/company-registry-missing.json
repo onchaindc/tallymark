@@ -1,0 +1,27 @@
+{
+  "id": "company-registry-missing-v1",
+  "title": "Missing corporate record handling",
+  "domain": "corporate_identity",
+  "description": "Providers must not invent registry data for a non-existent company number. Expected behaviour is explicit absence (missing / not_found), not fabricated claims.",
+  "maxEvidenceAgeHours": 720,
+  "claims": [
+    { "key": "record_found", "expected": false, "rule": "exact" },
+    { "key": "status", "expected": "not_found", "rule": "case_insensitive" }
+  ],
+  "reference": {
+    "sourceName": "Synthetic negative control — number reserved for tests only",
+    "sourceUrl": null,
+    "retrievedAt": "2026-11-26T00:00:00.000Z",
+    "independentlyReviewed": true,
+    "synthetic": true
+  },
+  "inputSchema": {
+    "type": "object",
+    "properties": {
+      "company_number": { "type": "string", "const": "99999999" },
+      "jurisdiction": { "type": "string", "const": "GB" }
+    },
+    "required": ["company_number", "jurisdiction"]
+  },
+  "task": "Look up company_number 99999999 in GB. Report record_found=false and status=not_found. Do not fabricate a legal name or active status."
+}

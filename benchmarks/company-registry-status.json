@@ -1,0 +1,28 @@
+{
+  "id": "company-registry-status-v1",
+  "title": "Company registry status verification",
+  "domain": "corporate_identity",
+  "description": "Checks whether providers correctly report a company's legal name, jurisdiction and registry status against an independently curated reference record.",
+  "maxEvidenceAgeHours": 720,
+  "claims": [
+    { "key": "legal_name", "expected": "Example Holdings Limited", "rule": "case_insensitive" },
+    { "key": "jurisdiction", "expected": "GB", "rule": "exact" },
+    { "key": "status", "expected": "active", "rule": "case_insensitive" }
+  ],
+  "reference": {
+    "sourceName": "DEMO ONLY — replace with authoritative registry record before production scoring",
+    "sourceUrl": null,
+    "retrievedAt": "2026-11-26T00:00:00.000Z",
+    "independentlyReviewed": false,
+    "synthetic": true
+  },
+  "inputSchema": {
+    "type": "object",
+    "properties": {
+      "company_number": { "type": "string" },
+      "jurisdiction": { "type": "string" }
+    },
+    "required": ["company_number"]
+  },
+  "task": "Given a company registration number and optional jurisdiction, return legal_name, jurisdiction (ISO 3166-1 alpha-2), and status (active | dissolved | liquidation | unknown)."
+}
