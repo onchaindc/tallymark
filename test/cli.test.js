@@ -12,7 +12,7 @@ const fixture = 'fixtures/synthetic/demo-run.json';
 test('JSON CLI normalises legacy fixture input and excludes synthetic scores', async () => {
   const { stdout } = await execFileAsync(process.execPath, ['src/cli.js', fixture], { cwd: process.cwd() });
   const report = JSON.parse(stdout);
-  assert.equal(report.runId, 'company-registry-status-demo-run-run');
+  assert.equal(report.runId, 'company-registry-status-demo-run');
   assert.equal(report.realCaseCount, 0);
   assert.equal(report.syntheticExcluded, 1);
   assert.equal(report.providers.length, 2);
