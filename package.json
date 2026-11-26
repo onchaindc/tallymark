@@ -1,15 +1,19 @@
 {
   "name": "tallymark",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "private": true,
   "type": "module",
   "description": "Independent Telegraph Intelligence Reliability Evaluator — reproducible commercial benchmarks for miner factual accuracy, evidence quality, freshness, latency and cost.",
   "scripts": {
-    "test": "node --test",
-    "evaluate:demo": "node src/cli.js fixtures/demo-run.json",
+    "test": "node --test test/evaluator.test.js test/adapter.test.js",
+    "test:live": "node --test test/live/",
+    "test:all": "node --test test/",
+    "evaluate:demo": "node src/cli.js fixtures/synthetic/demo-run.json",
     "evaluate": "node src/cli.js",
     "discover": "node src/cli-discover.js",
-    "report:html": "node src/report-html.js fixtures/demo-run.json reports/demo-report.html"
+    "probe:registry": "node src/cli-probe-registry.js reports/probe-registry.json",
+    "report:html": "node src/report-html.js fixtures/synthetic/demo-run.json reports/demo-report.html",
+    "report:probe": "node src/report-html.js reports/probe-registry.json reports/probe-registry.html"
   },
   "engines": {
     "node": ">=20"
