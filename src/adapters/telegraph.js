@@ -1,12 +1,15 @@
 /**
  * Telegraph provider adapter.
  *
- * Discovery and schema inspection are free (GET /api/miners).
- * Paid execution (engine/v1/ask, x402) is intentionally gated:
- * never call paid endpoints without an explicit spend ceiling and approval.
+ * Discovery and schema inspection are free.
+ * Paid execution (engine/v1/ask, x402) is gated:
+ * never call paid endpoints without explicit operator approval and spend ceiling.
  *
  * Live node (testnet): https://devnode.telegraphprotocol.com
  */
+
+import { createHash } from 'node:crypto';
+import { parsePaymentChallenge, validateReceiptShape, hashPayload } from '../payment/x402.js';
 
 const DEFAULT_NODE = process.env.TELEGRAPH_NODE_URL ?? 'https://devnode.telegraphprotocol.com';
 
@@ -15,15 +18,20 @@ export class TelegraphAdapter {
    * @param {object} options
    * @param {string} [options.nodeUrl]
    * @param {number} [options.timeoutMs]
-   * @param {boolean} [options.allowPaid] - must be true AND spendCeilingUsd set to enable paid calls
-   * @param {number} [options.spendCeilingUsd] - hard max USDC for this adapter instance
+   * @param {boolean} [options.allowPaid]
+   * @param {number} [options.spendCeilingUsd]
+   * @param {boolean} [options.operatorApproved]
+   * @param {string} [options.approvalToken]
    */
   constructor(options = {}) {
     this.nodeUrl = (options.nodeUrl ?? DEFAULT_NODE).replace(/\/$/, '');
     this.timeoutMs = options.timeoutMs ?? 15_000;
     this.allowPaid = options.allowPaid === true;
+    this.operatorApproved = options.operatorApproved === true;
+    this.approvalToken = options.approvalToken ?? null;
     this.spendCeilingUsd = Number(options.spendCeilingUsd) || 0;
     this.spentUsd = 0;
+    this.ledger = [];
   }
 
   async #get(path) {
@@ -46,10 +54,30 @@ export class TelegraphAdapter {
     }
   }
 
-  /**
-   * Free discovery: list miners, optionally filtered by intent.
-   * @param {{ intent?: string, limit?: number, status?: string }} [query]
-   */
+  async #post(path, body, headers = {}) {
+    const url = `${this.nodeUrl}${path}`;
+    const controller = new AbortController();
+    const timer = setTimeout(() => controller.abort(), this.timeoutMs);
+    try {
+      const res = await fetch(url, {
+        method: 'POST',
+        headers: { Accept: 'application/json', 'Content-Type': 'application/json', ...headers },
+        body: JSON.stringify(body),
+        signal: controller.signal,
+      });
+      const text = await res.text();
+      let json = null;
+      try {
+        json = text ? JSON.parse(text) : null;
+      } catch {
+        json = { raw: text };
+      }
+      return { status: res.status, headers: res.headers, json, text };
+    } finally {
+      clearTimeout(timer);
+    }
+  }
+
   async discoverMiners(query = {}) {
     const params = new URLSearchParams();
     if (query.intent) params.set('intent', query.intent);
@@ -61,107 +89,170 @@ export class TelegraphAdapter {
     return Array.isArray(data) ? data : data?.miners ?? data?.data ?? [];
   }
 
-  /**
-   * Free: fetch a single miner catalog entry by id/slug if the node supports it.
-   * Falls back to filtering the catalog.
-   */
-  async getMiner(idOrSlug) {
-    const miners = await this.discoverMiners({ limit: 500 });
-    return miners.find((m) => m.id === idOrSlug || m.slug === idOrSlug || m.name === idOrSlug) ?? null;
+  async listIntents() {
+    return this.#get('/engine/v1/intents');
   }
 
-  /**
-   * Summarise miners that declare CORPORATE_REGISTRY_LOOKUP or related intents.
-   * Used to plan independent evaluation runs — does not execute paid requests.
-   */
-  async findCorporateRegistryMiners() {
-    const candidates = [];
-    const intentsToProbe = ['CORPORATE_REGISTRY_LOOKUP', 'COMPANY_REGISTRY', 'REGISTRY_LOOKUP'];
-    for (const intent of intentsToProbe) {
-      try {
-        const miners = await this.discoverMiners({ intent, limit: 50 });
-        for (const m of miners) {
-          candidates.push({
-            id: m.id,
-            slug: m.slug,
-            name: m.name,
-            intent,
-            endpoints: m.endpoints?.map((e) => ({ path: e.path, method: e.method })) ?? [],
-            minPriceUsdc: m.min_price_usdc ?? m.minPriceUsdc ?? null,
-            raw: m,
-          });
-        }
-      } catch {
-        // Intent may not exist on this node; continue.
-      }
-    }
-    const seen = new Set();
-    return candidates.filter((c) => {
-      if (seen.has(c.id)) return false;
-      seen.add(c.id);
-      return true;
-    });
+  async getIntent(intentId) {
+    if (!intentId) throw new Error('intentId required');
+    return this.#get(`/engine/v1/intents/${encodeURIComponent(intentId)}`);
   }
 
-  /**
-   * Probe free catalog for miners whose endpoints or descriptions mention corporate/registry terms.
-   * Does not call paid endpoints.
-   */
-  async probeRegistryCapability() {
-    const miners = await this.discoverMiners({ limit: 100 });
-    const keywords = /registry|corporate|company.?house|companies.?house|legal.?entity|incorporation|opencorporates/i;
-    const hits = [];
-    for (const m of miners) {
-      const blob = JSON.stringify(m);
-      if (!keywords.test(blob)) continue;
-      hits.push({
-        id: m.id,
-        slug: m.slug,
-        name: m.name,
-        endpointCount: m.endpoints?.length ?? 0,
-        matchingEndpoints: (m.endpoints ?? [])
-          .filter((e) => keywords.test(JSON.stringify(e)))
-          .map((e) => ({ path: e.path, method: e.method, description: (e.description ?? '').slice(0, 120) })),
-        status: 'catalog_match',
-      });
-    }
+  async verifyCorporateRegistryCapability() {
+    const intentId = 'CORPORATE_REGISTRY_LOOKUP_GENERAL';
+    const detail = await this.getIntent(intentId);
+    const miners = (detail.miners ?? []).map((m) => ({
+      id: String(m.id),
+      slug: m.slug,
+      name: m.name,
+      compatible: m.compatible,
+      compatibility_reason: m.compatibility_reason ?? null,
+      mapping: m.mapping ?? null,
+      cost_per_call: m.cost_per_call ?? null,
+      compatible_endpoints: m.compatible_endpoints ?? [],
+      explicit_intent_capability: Array.isArray(m.capabilities)
+        ? m.capabilities.includes(intentId)
+        : null,
+      discovery_source: `GET /engine/v1/intents/${intentId}`,
+    }));
     return {
-      node: this.nodeUrl,
-      scanned: miners.length,
-      matches: hits,
-      note: 'Free catalog probe only. No paid inference was executed.',
+      intent_id: detail.intent_id,
+      family: detail.family,
+      class: detail.class,
+      lifecycle: detail.lifecycle,
+      request_schema: detail.request,
+      response_schema: detail.response,
+      onchain: detail.onchain,
+      miner_count: detail.miner_count ?? miners.length,
+      miners,
+      paidRequestsExecuted: false,
     };
   }
 
-  /**
-   * Paid execution is blocked until allowPaid + spendCeilingUsd are set
-   * and an explicit approveSpend call has been made by the operator.
-   */
+  async probePaymentChallenge(intent, params) {
+    const { status, json } = await this.#post('/engine/v1/ask', { intent, params });
+    if (status !== 402) {
+      return {
+        status,
+        unexpected: true,
+        body: json,
+        note: 'Expected HTTP 402 payment challenge; no payment was submitted.',
+      };
+    }
+    const challenge = parsePaymentChallenge(json);
+    return {
+      status: 402,
+      challenge,
+      note: 'Payment challenge only. No payment was submitted and no inference was executed.',
+    };
+  }
+
   assertPaidAllowed(estimatedCostUsd = 0.01) {
     if (!this.allowPaid) {
       throw new Error(
-        'Paid Telegraph requests are disabled. Construct TelegraphAdapter with { allowPaid: true, spendCeilingUsd: N } and obtain explicit approval before enabling.',
+        'Paid Telegraph requests are disabled. Construct TelegraphAdapter with { allowPaid: true, operatorApproved: true, spendCeilingUsd: N, approvalToken } after explicit operator approval.',
+      );
+    }
+    if (!this.operatorApproved) {
+      throw new Error(
+        'Operator approval required. Set operatorApproved: true and supply approvalToken after an explicit spend ceiling approval.',
       );
     }
     if (this.spendCeilingUsd <= 0) {
-      throw new Error('spendCeilingUsd must be a positive number when allowPaid is true.');
+      throw new Error('spendCeilingUsd must be a positive number when paid execution is enabled.');
     }
-    if (this.spentUsd + estimatedCostUsd > this.spendCeilingUsd) {
+    if (this.spentUsd + estimatedCostUsd > this.spendCeilingUsd + 1e-9) {
       throw new Error(
         `Spend ceiling would be exceeded (spent=${this.spentUsd}, request≈${estimatedCostUsd}, ceiling=${this.spendCeilingUsd}).`,
       );
     }
   }
 
-  /**
-   * Placeholder for future paid ask. Never executes without the gates above.
-   * When implemented: POST /engine/v1/ask with x402 handling, capture receipt + raw response.
-   */
-  async ask(/* intent, params, options */) {
-    this.assertPaidAllowed();
-    throw new Error(
-      'Paid ask is not enabled in this build. Discovery and fixture evaluation only. Live paid integration requires explicit operator approval and receipt capture.',
-    );
+  async ask({ intent, params, minerId, paymentHandler }) {
+    this.assertPaidAllowed(0.01);
+
+    if (typeof paymentHandler !== 'function') {
+      throw new Error(
+        'paymentHandler is required for paid ask. Provide a function that settles the 402 challenge and returns payment proof. No paid request was sent.',
+      );
+    }
+
+    const challengeRes = await this.probePaymentChallenge(intent, params);
+    if (challengeRes.status !== 402 || !challengeRes.challenge) {
+      throw new Error(`Expected 402 challenge before payment; got status=${challengeRes.status}`);
+    }
+    const estimated = challengeRes.challenge.priceUsd ?? 0.01;
+    this.assertPaidAllowed(estimated);
+
+    const paymentResult = await paymentHandler(challengeRes.challenge);
+    const receipt = paymentResult?.receipt ?? paymentResult;
+    const shape = validateReceiptShape(receipt);
+    if (!shape.valid) {
+      throw new Error(`Invalid payment receipt: ${shape.errors.join('; ')}`);
+    }
+
+    const paymentHeaders = paymentResult?.headers ?? {};
+    const body = { intent, params };
+    if (minerId) body.miner_id = minerId;
+
+    const paid = await this.#post('/engine/v1/ask', body, paymentHeaders);
+    if (paid.status === 402) {
+      throw new Error('Payment was rejected or not accepted; server still returned 402.');
+    }
+    if (paid.status < 200 || paid.status >= 300) {
+      throw new Error(`Paid ask failed: HTTP ${paid.status} ${String(paid.text).slice(0, 200)}`);
+    }
+
+    const rawResponse = paid.json;
+    const responseHash = hashPayload(rawResponse);
+    this.spentUsd += estimated;
+    const entry = {
+      at: new Date().toISOString(),
+      intent,
+      params,
+      minerId: minerId ?? null,
+      costUsd: estimated,
+      responseHash,
+      receipt,
+      approvalToken: this.approvalToken,
+    };
+    this.ledger.push(entry);
+
+    return {
+      rawResponse,
+      responseHash,
+      costUsd: estimated,
+      receipt,
+      ledgerEntry: entry,
+    };
+  }
+
+  buildDryRunPreview({ cases, minerIds, pricePerRequestUsd = 0.01, probeChallenge = null }) {
+    const caseCount = cases.length;
+    const minerCount = minerIds.length;
+    const requests = caseCount * minerCount;
+    const maxSpendUsd = requests * pricePerRequestUsd;
+    return {
+      mode: 'dry_run',
+      paidRequestsExecuted: false,
+      intent: 'CORPORATE_REGISTRY_LOOKUP_GENERAL',
+      pricePerRequestUsd,
+      caseCount,
+      minerCount,
+      requests,
+      maxSpendUsd,
+      spendCeilingRequired: maxSpendUsd,
+      cases: cases.map((c) => ({
+        id: c.id,
+        company_number: c.company_number,
+        params: c.params,
+        claimKeys: (c.claims || []).map((x) => x.key),
+      })),
+      candidateMinerIds: minerIds,
+      paymentChallengeSample: probeChallenge,
+      operatorApprovalRequired: true,
+      note: 'Dry-run only. No paid requests will be executed until explicit approval of a spend ceiling.',
+    };
   }
 }
 
