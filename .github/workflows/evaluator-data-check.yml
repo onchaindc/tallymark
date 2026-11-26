@@ -1,0 +1,35 @@
+name: Evaluator preference data gate
+on:
+  push:
+    paths:
+      - "training/**"
+      - "benchmarks/real/corporate-registry-v2.json"
+      - ".github/workflows/evaluator-data-check.yml"
+  pull_request:
+    paths:
+      - "training/**"
+      - "benchmarks/real/corporate-registry-v2.json"
+      - ".github/workflows/evaluator-data-check.yml"
+  workflow_dispatch:
+
+jobs:
+  check-data:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Install gate dependency
+        run: python -m pip install numpy
+      - name: Fetch pinned Telegraph adapter kit
+        run: |
+          git clone https://github.com/telegraphprotocol/telegraph-wasm-baseline.git
+          git -C telegraph-wasm-baseline checkout 1ed063e2f0066cfaf0e124d66ec6a17b7a6121fd
+      - name: Run official dataset gate
+        working-directory: telegraph-wasm-baseline
+        run: |
+          python -m float_runtime.train_adapter \
+            --intent CORPORATE_REGISTRY_LOOKUP_GENERAL \
+            --data "$GITHUB_WORKSPACE/training/corporate-registry-pairs.jsonl" \
+            --check-data
