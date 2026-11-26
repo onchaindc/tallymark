@@ -1,0 +1,23 @@
+{
+  "generatedAt": "2026-11-26T19:58:00.000Z",
+  "payerAddress": "0xE00Ecb51e1bA79731E78D443A90e3AD200107c4b",
+  "intent": "CORPORATE_REGISTRY_LOOKUP_GENERAL",
+  "paymentScheme": "exact",
+  "network": "eip155:84532",
+  "ceilingUsd": 0.24,
+  "priorExploratorySpendUsd": 0.04,
+  "formalRunSpendUsd": 0.19,
+  "totalSpendUsd": 0.23,
+  "remainingUsd": 0.01,
+  "networkFeesNote": "Base Sepolia gas for USDC authorizations is outside the $0.24 miner ceiling and was not metered in this run.",
+  "requestCounts": { "success": 19, "failed": 5, "plannedMax": 24 },
+  "minerSummary": [
+    { "minerId": "774921", "slug": "verireceipt", "evaluated": 3, "avgAccuracy": 0.2, "avgCompleteness": 0.2, "totalCostUsd": 0.03, "reliabilityClaim": "NOT claimed" },
+    { "minerId": "4433", "slug": "livecert", "evaluated": 4, "avgAccuracy": 0.0, "avgCompleteness": 0.0, "totalCostUsd": 0.04, "reliabilityClaim": "NOT claimed" },
+    { "minerId": "77393", "slug": "zk-corp-reg", "evaluated": 4, "avgAccuracy": 1.0, "avgCompleteness": 1.0, "totalCostUsd": 0.04, "reliabilityClaim": "NOT claimed — limited sample only" },
+    { "minerId": "6164", "slug": "praman-compliance-miner", "evaluated": 4, "avgAccuracy": 0.3, "avgCompleteness": 0.6, "totalCostUsd": 0.04, "reliabilityClaim": "NOT claimed" },
+    { "minerId": "83159274", "slug": "telegraph-intent-miner", "evaluated": 4, "avgAccuracy": 0.1, "avgCompleteness": 0.4, "totalCostUsd": 0.04, "reliabilityClaim": "NOT claimed" },
+    { "minerId": "1900999000", "slug": "referenceforge-numeric", "evaluated": 0, "note": "all requests failed UNSUPPORTED_JURISDICTION for GB" }
+  ],
+  "important": "A successful HTTP 200 does not mean the miner is reliable. Claim match rates against Companies House are reported without promoting any miner as reliable."
+}
