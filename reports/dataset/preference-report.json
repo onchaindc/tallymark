@@ -1,16 +1,38 @@
 {
-  "pair_count": 32,
-  "source_kinds": { "independent_author": 32 },
-  "historical_miner_transcripts_in_repo": 0,
-  "historical_summary_only": true,
-  "historical_success_count_from_summary": 19,
-  "official_check_data": {
-    "result": "FAIL",
-    "unique_negatives": "78.1% (<80%)",
-    "largest_single_neg": "25.0% (>2%)",
-    "length_shortcut": "78.1% (>65%)",
-    "held_out_leak": "25.0% (>10%)",
-    "surface_probe": "80.0% (>65%)"
+  "intent": "CORPORATE_REGISTRY_LOOKUP_GENERAL",
+  "class": "judgment",
+  "family": "CORPORATE_REGISTRY_LOOKUP",
+  "dataset_file": "training/corporate-registry-pairs.jsonl",
+  "generator": "training/build_preference_pairs.py",
+  "pair_count": 100,
+  "source_record_count": 8,
+  "source_kinds": [
+    "llm"
+  ],
+  "observed_miner_transcripts": 0,
+  "provenance_class": "unverified",
+  "gate": {
+    "unique_rejected_frac": 1,
+    "top_rejected_share": 0.01,
+    "identical_pairs": 0,
+    "length_shortcut_acc": 0.505,
+    "eval_negative_leak": 0,
+    "surface_probe_by_seed": [
+      0.4667,
+      0.5,
+      0.4,
+      0.3333,
+      0.3
+    ],
+    "surface_probe_acc": 0.4,
+    "prompt_near_duplicate_pairs_at_85pct": 0,
+    "mean_chosen_chars": 179,
+    "mean_rejected_chars": 178.8,
+    "status": "PASS_REPRODUCED_LOCALLY_NOT_YET_OFFICIAL_CI"
   },
-  "gap": "Full raw miner responses from the prior paid run are not in git. Independently authored pairs from registry facts failed the official dataset gate on diversity, length bias, leakage, and surface shortcuts. Do not train on this set."
+  "limitations": [
+    "Pairs are LLM-constructed counterfactuals, not captured Miner transcripts or human-authored labels.",
+    "Only eight entities support the current corpus; entity memorisation remains a risk.",
+    "No model training, export, packaging, runnable endpoint, registration, or on-chain action has been performed."
+  ]
 }
