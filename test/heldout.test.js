@@ -6,8 +6,8 @@ const root = new URL('../', import.meta.url);
 
 test('held-out set has no entity overlap with preference-training source', async () => {
   const [trainingText, heldoutText] = await Promise.all([
-    readFile(new URL('../benchmarks/real/corporate-registry-v2.json', root), 'utf8'),
-    readFile(new URL('../benchmarks/heldout/corporate-registry-adversarial-v1.json', root), 'utf8'),
+    readFile(new URL('benchmarks/real/corporate-registry-v2.json', root), 'utf8'),
+    readFile(new URL('benchmarks/heldout/corporate-registry-adversarial-v1.json', root), 'utf8'),
   ]);
   const training = JSON.parse(trainingText);
   const heldout = JSON.parse(heldoutText);
