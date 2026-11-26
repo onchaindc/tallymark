@@ -1,0 +1,26 @@
+{
+  "name": "tallymark",
+  "version": "0.2.0",
+  "private": true,
+  "type": "module",
+  "description": "Independent Telegraph Intelligence Reliability Evaluator — reproducible commercial benchmarks for miner factual accuracy, evidence quality, freshness, latency and cost.",
+  "scripts": {
+    "test": "node --test",
+    "evaluate:demo": "node src/cli.js fixtures/demo-run.json",
+    "evaluate": "node src/cli.js",
+    "discover": "node src/cli-discover.js",
+    "report:html": "node src/report-html.js fixtures/demo-run.json reports/demo-report.html"
+  },
+  "engines": {
+    "node": ">=20"
+  },
+  "keywords": [
+    "telegraph",
+    "evaluator",
+    "benchmark",
+    "miner",
+    "intelligence",
+    "reliability"
+  ],
+  "license": "MIT"
+}
