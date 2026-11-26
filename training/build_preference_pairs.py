@@ -1,10 +1,9 @@
 #!/usr/bin/env python3
 """Build controlled preference pairs from independently sourced registry records.
 
-The output is an LLM-constructed counterfactual dataset, not observed Miner
-transcripts or human labels. Provenance remains source_kind=llm (unverified).
-Every negative changes exactly one field and is drawn from the same
-jurisdiction, avoiding cross-registry donor corruption.
+These are LLM-constructed counterfactuals, not observed Miner transcripts or
+human labels. Provenance remains source_kind=llm (unverified). Each negative
+changes exactly one field and uses a donor from the same jurisdiction.
 """
 from __future__ import annotations
 import json
@@ -50,8 +49,8 @@ def read_records():
             "active": bool(values["active"]),
             "url": case["reference"]["sourceUrl"],
         })
-    if len(records) < 13:
-        raise SystemExit(f"Expected at least 13 reviewed source records; found {len(records)}")
+    if len(records) < 19:
+        raise SystemExit(f"Expected at least 19 reviewed source records; found {len(records)}")
     return records
 
 def build():
@@ -71,7 +70,7 @@ def build():
             if not donors:
                 continue
             for variant in range(5):
-                donor_index, donor = donors[(index + variant) % len(donors)]
+                _, donor = donors[(index + variant) % len(donors)]
                 wrong = dict(target)
                 wrong[field] = donor[field]
                 prompt = PROMPTS[variant].format(id=target["id"], jur=target["jur"])
@@ -87,14 +86,11 @@ def build():
                     "chosen": render(target),
                     "rejected": render(wrong),
                     "label_kind": "preference_pair",
-                    "provenance": {
-                        "source_kind": "llm",
-                        "source_url": target["url"],
-                    },
+                    "provenance": {"source_kind": "llm", "source_url": target["url"]},
                 })
 
-    if len(rows) < 150:
-        raise SystemExit(f"Expected at least 150 pairs after same-jurisdiction filtering; found {len(rows)}")
+    if len(rows) < 250:
+        raise SystemExit(f"Expected at least 250 pairs after same-jurisdiction filtering; found {len(rows)}")
     if len({row["prompt"] for row in rows}) != len(rows):
         raise SystemExit("Duplicate prompts generated")
     if any(row["chosen"] == row["rejected"] for row in rows):
