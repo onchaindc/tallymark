@@ -1,0 +1,90 @@
+{
+  "id": "companies-house-uk-v1",
+  "title": "UK Companies House corporate identity (independently sourced)",
+  "domain": "corporate_identity",
+  "description": "Reference set curated from the public Companies House register (find-and-update.company-information.service.gov.uk). Each record includes company number, legal name, jurisdiction, status, retrieval timestamp and source URL. Synthetic fixtures must not be mixed into published scores derived from this set.",
+  "maxEvidenceAgeHours": 720,
+  "sourceAuthority": "Companies House (UK)",
+  "synthetic": false,
+  "retrievedAt": "2026-11-26T20:20:00.000Z",
+  "cases": [
+    {
+      "id": "ch-openai-uk-14367667",
+      "company_number": "14367667",
+      "claims": [
+        { "key": "legal_name", "expected": "OPENAI UK LTD", "rule": "case_insensitive" },
+        { "key": "jurisdiction", "expected": "GB", "rule": "exact" },
+        { "key": "status", "expected": "active", "rule": "case_insensitive" },
+        { "key": "company_number", "expected": "14367667", "rule": "exact" }
+      ],
+      "reference": {
+        "sourceName": "Companies House — OPENAI UK LTD overview",
+        "sourceUrl": "https://find-and-update.company-information.service.gov.uk/company/14367667",
+        "retrievedAt": "2026-11-26T20:20:00.000Z",
+        "independentlyReviewed": true,
+        "synthetic": false,
+        "companyType": "Private limited Company",
+        "incorporatedOn": "2022-09-21"
+      }
+    },
+    {
+      "id": "ch-deepmind-07386350",
+      "company_number": "07386350",
+      "claims": [
+        { "key": "legal_name", "expected": "DEEPMIND TECHNOLOGIES LIMITED", "rule": "case_insensitive" },
+        { "key": "jurisdiction", "expected": "GB", "rule": "exact" },
+        { "key": "status", "expected": "active", "rule": "case_insensitive" },
+        { "key": "company_number", "expected": "07386350", "rule": "exact" }
+      ],
+      "reference": {
+        "sourceName": "Companies House — DEEPMIND TECHNOLOGIES LIMITED overview",
+        "sourceUrl": "https://find-and-update.company-information.service.gov.uk/company/07386350",
+        "retrievedAt": "2026-11-26T20:20:00.000Z",
+        "independentlyReviewed": true,
+        "synthetic": false,
+        "companyType": "Private limited Company",
+        "incorporatedOn": "2010-09-23"
+      }
+    },
+    {
+      "id": "ch-bbc-commercial-04463534",
+      "company_number": "04463534",
+      "claims": [
+        { "key": "legal_name", "expected": "BBC COMMERCIAL LIMITED", "rule": "case_insensitive" },
+        { "key": "jurisdiction", "expected": "GB", "rule": "exact" },
+        { "key": "status", "expected": "active", "rule": "case_insensitive" },
+        { "key": "company_number", "expected": "04463534", "rule": "exact" }
+      ],
+      "reference": {
+        "sourceName": "Companies House — BBC COMMERCIAL LIMITED overview",
+        "sourceUrl": "https://find-and-update.company-information.service.gov.uk/company/04463534",
+        "retrievedAt": "2026-11-26T20:20:00.000Z",
+        "independentlyReviewed": true,
+        "synthetic": false,
+        "companyType": "Private limited Company",
+        "incorporatedOn": "2002-06-18",
+        "previousNames": ["BBC COMMERCIAL HOLDINGS LIMITED", "FFW 1979 LIMITED"]
+      }
+    },
+    {
+      "id": "ch-dissolved-03877937",
+      "company_number": "03877937",
+      "claims": [
+        { "key": "legal_name", "expected": "THE PULVER CARR PARTNERSHIP LIMITED", "rule": "case_insensitive" },
+        { "key": "jurisdiction", "expected": "GB", "rule": "exact" },
+        { "key": "status", "expected": "dissolved", "rule": "case_insensitive" },
+        { "key": "company_number", "expected": "03877937", "rule": "exact" }
+      ],
+      "reference": {
+        "sourceName": "Companies House — THE PULVER CARR PARTNERSHIP LIMITED overview",
+        "sourceUrl": "https://find-and-update.company-information.service.gov.uk/company/03877937",
+        "retrievedAt": "2026-11-26T20:20:00.000Z",
+        "independentlyReviewed": true,
+        "synthetic": false,
+        "companyType": "Private limited Company",
+        "incorporatedOn": "1999-11-16",
+        "dissolvedOn": "2025-03-05"
+      }
+    }
+  ]
+}
