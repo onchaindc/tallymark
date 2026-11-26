@@ -1,0 +1,16 @@
+{
+  "pair_count": 32,
+  "source_kinds": { "independent_author": 32 },
+  "historical_miner_transcripts_in_repo": 0,
+  "historical_summary_only": true,
+  "historical_success_count_from_summary": 19,
+  "official_check_data": {
+    "result": "FAIL",
+    "unique_negatives": "78.1% (<80%)",
+    "largest_single_neg": "25.0% (>2%)",
+    "length_shortcut": "78.1% (>65%)",
+    "held_out_leak": "25.0% (>10%)",
+    "surface_probe": "80.0% (>65%)"
+  },
+  "gap": "Full raw miner responses from the prior paid run are not in git. Independently authored pairs from registry facts failed the official dataset gate on diversity, length bias, leakage, and surface shortcuts. Do not train on this set."
+}

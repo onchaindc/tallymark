@@ -1,0 +1,43 @@
+{
+  "stage": 1,
+  "repo_head_at_start": "96a86c5196c2a00b8af0e39029d66db73bae01aa",
+  "intent": {
+    "intent_id": "CORPORATE_REGISTRY_LOOKUP_GENERAL",
+    "class": "judgment",
+    "family": "CORPORATE_REGISTRY_LOOKUP",
+    "register_on": "CORPORATE_REGISTRY_LOOKUP",
+    "lifecycle_state": "active",
+    "miner_count": 30,
+    "family_children": ["CORPORATE_REGISTRY_LOOKUP_GENERAL"]
+  },
+  "canonical_evaluator": {
+    "registration_id": 242,
+    "author": "0xcd0a2370f2dc12c1802707b7d9ab3fec891e3c02",
+    "wasm_hash": "42998a9d609b9ce06449089db8643e9b6dfdc70d9870e0819a26332af0c0b73e",
+    "activation_status": "active",
+    "stage": "canonical",
+    "eval_score": 0.76666665,
+    "foundation_hash": "0a49b325304bb4cf292e683929689d0457966be264f60bfc94d0072b614bf8e6",
+    "engine_hash": "77643d6e1176ab8744801cef93ccb844d0136ed32b8daa865d541f37d13292de",
+    "tokenizer_hash": "67bc76f8b9386efba1a761c1c8e5ad439fd0eaf1c2826e9dd1a205c7af4dc456"
+  },
+  "evalpool": {
+    "CORPORATE_REGISTRY_LOOKUP_GENERAL": {
+      "eligible_rows": 1122,
+      "eligible_submitters": 8,
+      "min_submitters": 3,
+      "current_epoch": 62,
+      "competition_can_proceed": true
+    },
+    "CORPORATE_REGISTRY_LOOKUP": {
+      "eligible_rows": 56,
+      "eligible_submitters": 2,
+      "min_submitters": 3
+    }
+  },
+  "wasm_baseline_pin": {
+    "repo": "https://github.com/telegraphprotocol/telegraph-wasm-baseline",
+    "commit": "1ed063e2f0066cfaf0e124d66ec6a17b7a6121fd",
+    "workflow": "safetensors LoRA delta"
+  }
+}
