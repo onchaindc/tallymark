@@ -4,80 +4,61 @@ Independent Telegraph Intelligence Reliability Evaluator.
 
 TALLYMARK evaluates specialist intelligence providers (Telegraph miners) against repeatable commercial benchmark cases. It records factual accuracy, completeness, evidence quality and provenance, freshness, latency and cost, and produces an auditable, reproducible scorecard.
 
-It is designed to answer: **which providers actually deliver reliable intelligence**, not which providers return the most convincing prose.
-
-## Design principles
-
-- Reference answers carry traceable sources and timestamps (or are explicitly labelled synthetic).
-- Provider responses are stored unchanged and hashed for integrity.
-- Scoring is deterministic wherever objective comparison is possible.
-- Missing evidence is never treated as a correct answer.
-- Unsupported claims are penalised and listed.
-- Provider self-`verified` flags are ignored for scoring.
-- Latency and cost are reported separately; they do not substitute for correctness.
-- Paid Telegraph execution is gated behind explicit spend ceilings and is off by default.
-- **Synthetic and real-reference results are never mixed in published scores.**
-
-## Current scope (v0.3)
+## Current scope (v0.4)
 
 | Area | Status |
 |------|--------|
 | Deterministic claim scoring | Implemented |
-| Evidence metadata + freshness checks | Implemented |
-| Fixture-driven runs + CLI | Implemented |
-| HTML scorecard (kind banners) | Implemented |
-| Corporate-identity synthetic fixtures | Implemented (regression only) |
-| Independently sourced Companies House dataset | Implemented |
-| Telegraph miner discovery (free `/api/miners`) | Implemented |
-| Free registry capability probe | Implemented |
-| Paid ask / x402 receipt capture | **Not enabled** |
-| Live scored evaluation against real CH cases | Blocked on paid path + operator approval |
+| Companies House real reference dataset | Implemented |
+| Intent capability verification (free) | Implemented |
+| CORPORATE_REGISTRY_LOOKUP_GENERAL discovery | Verified (30 miners listed) |
+| x402 challenge parse + receipt shape checks | Implemented |
+| Paid ask + receipt capture | **Implemented but disabled by default** |
+| Operator approval + spend ceiling gates | Implemented |
+| Dry-run spend preview | Implemented |
+| Live scored evaluation | **Blocked pending explicit spend approval** |
+
+## Intent under evaluation
+
+Canonical intent: **`CORPORATE_REGISTRY_LOOKUP_GENERAL`** (family `CORPORATE_REGISTRY_LOOKUP`).
+
+Request params: `company` (string, required), `jurisdiction` (string, required).  
+Response fields: `legal_name`, `registration_id`, `active` (bool, scored), `jurisdiction`, `registered_address`, `incorporated`.
+
+Discovery evidence: `GET /engine/v1/intents` and `GET /engine/v1/intents/CORPORATE_REGISTRY_LOOKUP_GENERAL` on `https://devnode.telegraphprotocol.com`. Capability is taken only from explicit intent membership — not keyword matches.
 
 ## Run
 
-Requires Node.js 20+.
-
 ```sh
-npm test                 # deterministic unit tests only (no network)
-npm run test:live        # optional live discovery/probe (network)
-npm run evaluate:demo    # synthetic fixture scorecard
-npm run report:html
-npm run discover         # free miner catalog
-npm run probe:registry   # free catalog probe + real CH case readiness report
-npm run report:probe
+npm test                 # offline unit tests (no network)
+npm run test:live        # optional live discovery
+npm run capability       # free intent + miner capability report
+npm run dry-run          # preview cases × miners × max spend (no payment)
+npm run evaluate:demo    # synthetic fixture only
 ```
 
-## Evaluation model
+## Paid evaluation gate
 
-Weights (overall score):
+Paid `ask()` requires **all** of:
 
-- Accuracy — 50%
-- Completeness — 20%
-- Evidence quality — 20%
-- Freshness — 10%
+1. `allowPaid: true`
+2. `operatorApproved: true`
+3. positive `spendCeilingUsd`
+4. `approvalToken` (operator reference)
+5. a `paymentHandler` that returns a receipt passing `validateReceiptShape`
 
-## Benchmarks
+Until you approve a specific ceiling (dry-run currently estimates **$0.24** for 4 real cases × 6 code-mapping miners at $0.01), no paid requests are sent.
 
-**Synthetic (regression only)** — `benchmarks/company-registry-*.json`, `fixtures/synthetic/`
+## Real reference sources (Companies House)
 
-**Real reference** — `benchmarks/real/companies-house-uk.json`
+| Number | Name | Status |
+|--------|------|--------|
+| 14367667 | OPENAI UK LTD | Active |
+| 07386350 | DEEPMIND TECHNOLOGIES LIMITED | Active |
+| 04463534 | BBC COMMERCIAL LIMITED | Active |
+| 03877937 | THE PULVER CARR PARTNERSHIP LIMITED | Dissolved |
 
-Records retrieved 2026-11-26 from Companies House public pages:
-
-| Company number | Legal name | Status | Source |
-|----------------|------------|--------|--------|
-| 14367667 | OPENAI UK LTD | Active | [CH](https://find-and-update.company-information.service.gov.uk/company/14367667) |
-| 07386350 | DEEPMIND TECHNOLOGIES LIMITED | Active | [CH](https://find-and-update.company-information.service.gov.uk/company/07386350) |
-| 04463534 | BBC COMMERCIAL LIMITED | Active | [CH](https://find-and-update.company-information.service.gov.uk/company/04463534) |
-| 03877937 | THE PULVER CARR PARTNERSHIP LIMITED | Dissolved | [CH](https://find-and-update.company-information.service.gov.uk/company/03877937) |
-
-## Telegraph integration
-
-Adapter: `src/adapters/telegraph.js`
-
-- **Discovery** (free): `GET /api/miners` on `https://devnode.telegraphprotocol.com`
-- **Probe**: keyword scan of free catalog for registry/corporate capability
-- **Paid execution**: not enabled
+Synthetic controls (missing / conflict) are labelled and excluded from real score publication.
 
 ## License
 
