@@ -33,7 +33,7 @@ Measured with the pinned `telegraphprotocol/telegraph-wasm-baseline` trainer's d
 
 The five surface-probe results were 46.7%, 50.0%, 40.0%, 33.3% and 30.0%.
 
-This is a reproduced data-gate calculation, not yet a successful run of the pinned trainer in GitHub Actions. Passing the data gate does not prove model quality or guarantee admission/competition on Telegraph. The held-out model evaluation gate still requires at least 65% pairwise accuracy and a 10-point margin over the length baseline.
+The pinned trainer's official `float_runtime.train_adapter --check-data` command passed in GitHub Actions run https://github.com/onchaindc/tallymark/actions/runs/45907031587. Passing the data gate does not prove model quality or guarantee admission/competition on Telegraph. The held-out model evaluation gate still requires at least 65% pairwise accuracy and a 10-point margin over the length baseline.
 
 ## Rebuild
 
