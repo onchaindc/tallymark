@@ -5,35 +5,27 @@
 - Intent: `CORPORATE_REGISTRY_LOOKUP_GENERAL`
 - Class: judgment
 - Source benchmark: `benchmarks/real/corporate-registry-v2.json`
-- Records: 8 real-reference entities (6 Companies House, 2 SEC EDGAR)
-- Pairs: 100
-- Pair construction: one deliberately corrupted field per pair, selected from legal name, registration identifier, or active flag. The preferred answer is grounded in the target record; the rejected answer substitutes one field from another real benchmark record.
-- Prompt design: 10 distinct request structures crossed with 10 distinct task formulations.
+- Records: 13 real-reference entities (9 Companies House GB, 4 SEC EDGAR US)
+- Pair construction: each negative changes exactly one field (legal name, registration identifier, or active indicator) using a donor from the same jurisdiction. The generator omits a field comparison when no valid same-jurisdiction donor differs on that field.
+- Prompt design: five request structures and five task formulations, crossed across target records and corrupted fields.
 - No paid Miner requests were made to create this dataset.
 
 ## Provenance and limitations
 
-These are **LLM-constructed counterfactual preference pairs**, not observed Miner transcripts and not human-authored labels. Each row uses `provenance.source_kind = "llm"` deliberately. Under the current eval-pool rules this provenance is unverified, even though the linked official registry URL supports the target record. Do not relabel these rows as human-authored or source-attested.
+These are **LLM-constructed counterfactual preference pairs**, not observed Miner transcripts and not human-authored labels. Every row uses `provenance.source_kind = "llm"` deliberately. Under the current eval-pool rules this provenance is unverified, even though the linked official registry URL supports the target record. Do not relabel these rows as human-authored or source-attested.
 
-The corpus is a first training candidate, not a claim of broad corporate-registry coverage. It draws on only eight entities and is vulnerable to entity memorisation. Before treating an adapter as useful beyond a prototype, expand the benchmark with more independently checked companies, more jurisdictions and additional answer behaviours (missing fields, unsupported claims, stale records, evidence quality and ambiguous matches). Do not mix these pairs into TALLYMARK's real Miner score benchmark.
+The source set is a small controlled benchmark, not broad corporate-registry coverage. It covers Companies House (GB) and SEC EDGAR (US) only. SEC `active=true` means the entity is a current EDGAR registrant with recent filings; it is not a direct equivalent of Companies House company status. Entity-held-out evaluation is still required to detect memorisation. Additional jurisdictions and behaviours (missing fields, unsupported claims, stale records, evidence quality, ambiguous matches and former names) remain future work. Do not mix these pairs into TALLYMARK's real Miner score benchmark.
 
-## Local data-gate result
+## Data integrity rules
 
-Measured with the pinned `telegraphprotocol/telegraph-wasm-baseline` trainer's dataset-gate implementation and defaults (100 pairs; seed 42; 15% holdout):
+- Donor records must share the target's jurisdiction.
+- Each rejected answer changes exactly one target field.
+- Duplicate prompts and identical chosen/rejected answers fail generation.
+- Records remain linked to their official registry source URL.
 
-| Check | Result | Threshold |
-|---|---:|---:|
-| Unique rejected answers | 100% | at least 80% |
-| Most repeated rejected answer | 1% | at most 2% |
-| Identical chosen/rejected | 0% | at most 1% |
-| Length-only shortcut | 50.5% | at most 65% |
-| Held-out rejected-answer leakage | 0% | at most 10% |
-| Bag-of-words surface probe, five seeds | 40.0% mean | at most 65% |
-| Prompt near-duplicates at 85% similarity | 0 | none expected |
+## Gate status
 
-The five surface-probe results were 46.7%, 50.0%, 40.0%, 33.3% and 30.0%.
-
-The pinned trainer's official `float_runtime.train_adapter --check-data` command passed in GitHub Actions run https://github.com/onchaindc/tallymark/actions/runs/45907031587. Passing the data gate does not prove model quality or guarantee admission/competition on Telegraph. The held-out model evaluation gate still requires at least 65% pairwise accuracy and a 10-point margin over the length baseline.
+The expanded corpus must pass the pinned Telegraph trainer's `float_runtime.train_adapter --check-data` in CI. Previous gate metrics from the 100-pair corpus are intentionally not copied here. Record new metrics only after the expanded dataset's official CI run completes.
 
 ## Rebuild
 
@@ -41,4 +33,4 @@ The pinned trainer's official `float_runtime.train_adapter --check-data` command
 python training/build_preference_pairs.py
 ```
 
-The generator reads the real-reference benchmark directly and writes the JSONL. The committed JSONL is the exact input intended for the pinned training kit.
+The generator reads the real-reference benchmark directly and writes the JSONL. All generated rows retain unverified LLM provenance.
