@@ -1,0 +1,519 @@
+{
+  "id": "b2b-identity-enrichment-v1",
+  "intent": "B2B_IDENTITY_ENRICHMENT_GENERAL",
+  "title": "B2B company enrichment reference set",
+  "version": "1.0.0",
+  "note": "Candidate source set assembled from issuer SEC filings. Employee-count scope varies by issuer and is recorded in evidenceNote. Industry labels are curator-normalized from issuer business descriptions and require independent review before protocol submission.",
+  "cases": [
+    {
+      "id": "b2b-microsoft-corporation",
+      "kind": "real_reference",
+      "split": "train",
+      "params": {
+        "company": "Microsoft Corporation"
+      },
+      "claims": [
+        {
+          "key": "employee_count",
+          "expected": 223000,
+          "rule": "exact"
+        },
+        {
+          "key": "industry",
+          "expected": "enterprise software and cloud computing",
+          "rule": "case_insensitive"
+        }
+      ],
+      "reference": {
+        "sourceName": "SEC EDGAR filing",
+        "sourceUrl": "https://www.sec.gov/Archives/edgar/data/789019/000119312526323660/msft-20260630.htm",
+        "asOf": "2026-06-30",
+        "retrievedAt": "2026-11-27",
+        "synthetic": false,
+        "evidenceNote": "Full-time employees reported in FY2026 Form 10-K",
+        "industryLabelStatus": "curator-normalized from issuer business description; requires independent review",
+        "employeeCountStatus": "issuer-reported; see evidenceNote for scope and precision"
+      }
+    },
+    {
+      "id": "b2b-alphabet-inc",
+      "kind": "real_reference",
+      "split": "train",
+      "params": {
+        "company": "Alphabet Inc."
+      },
+      "claims": [
+        {
+          "key": "employee_count",
+          "expected": 190820,
+          "rule": "exact"
+        },
+        {
+          "key": "industry",
+          "expected": "internet services and digital advertising",
+          "rule": "case_insensitive"
+        }
+      ],
+      "reference": {
+        "sourceName": "SEC EDGAR filing",
+        "sourceUrl": "https://www.sec.gov/Archives/edgar/data/1652044/000165204426000018/goog-20251231.htm",
+        "asOf": "2025-12-31",
+        "retrievedAt": "2026-11-27",
+        "synthetic": false,
+        "evidenceNote": "Employees reported in 2025 Form 10-K",
+        "industryLabelStatus": "curator-normalized from issuer business description; requires independent review",
+        "employeeCountStatus": "issuer-reported; see evidenceNote for scope and precision"
+      }
+    },
+    {
+      "id": "b2b-oracle-corporation",
+      "kind": "real_reference",
+      "split": "train",
+      "params": {
+        "company": "Oracle Corporation"
+      },
+      "claims": [
+        {
+          "key": "employee_count",
+          "expected": 141000,
+          "rule": "exact"
+        },
+        {
+          "key": "industry",
+          "expected": "enterprise software and cloud infrastructure",
+          "rule": "case_insensitive"
+        }
+      ],
+      "reference": {
+        "sourceName": "SEC EDGAR filing",
+        "sourceUrl": "https://www.sec.gov/Archives/edgar/data/1341439/000119312526277521/orcl-20260531.htm",
+        "asOf": "2026-05-31",
+        "retrievedAt": "2026-11-27",
+        "synthetic": false,
+        "evidenceNote": "Approximate full-time employees reported in FY2026 Form 10-K",
+        "industryLabelStatus": "curator-normalized from issuer business description; requires independent review",
+        "employeeCountStatus": "issuer-reported; see evidenceNote for scope and precision"
+      }
+    },
+    {
+      "id": "b2b-amazon-com-inc",
+      "kind": "real_reference",
+      "split": "train",
+      "params": {
+        "company": "Amazon.com, Inc."
+      },
+      "claims": [
+        {
+          "key": "employee_count",
+          "expected": 1576000,
+          "rule": "exact"
+        },
+        {
+          "key": "industry",
+          "expected": "e-commerce and cloud computing",
+          "rule": "case_insensitive"
+        }
+      ],
+      "reference": {
+        "sourceName": "SEC EDGAR filing",
+        "sourceUrl": "https://www.sec.gov/Archives/edgar/data/1018724/000101872426000004/amzn-20251231.htm",
+        "asOf": "2025-12-31",
+        "retrievedAt": "2026-11-27",
+        "synthetic": false,
+        "evidenceNote": "Approximate full-time and part-time employees reported in 2025 Form 10-K",
+        "industryLabelStatus": "curator-normalized from issuer business description; requires independent review",
+        "employeeCountStatus": "issuer-reported; see evidenceNote for scope and precision"
+      }
+    },
+    {
+      "id": "b2b-cisco-systems-inc",
+      "kind": "real_reference",
+      "split": "train",
+      "params": {
+        "company": "Cisco Systems, Inc."
+      },
+      "claims": [
+        {
+          "key": "employee_count",
+          "expected": 82400,
+          "rule": "exact"
+        },
+        {
+          "key": "industry",
+          "expected": "networking equipment and software",
+          "rule": "case_insensitive"
+        }
+      ],
+      "reference": {
+        "sourceName": "SEC EDGAR filing",
+        "sourceUrl": "https://www.sec.gov/Archives/edgar/data/858877/000085887726000132/csco-20260725.htm",
+        "asOf": "2026-07-25",
+        "retrievedAt": "2026-11-27",
+        "synthetic": false,
+        "evidenceNote": "Approximate employees reported in FY2026 Form 10-K",
+        "industryLabelStatus": "curator-normalized from issuer business description; requires independent review",
+        "employeeCountStatus": "issuer-reported; see evidenceNote for scope and precision"
+      }
+    },
+    {
+      "id": "b2b-jpmorgan-chase-co",
+      "kind": "real_reference",
+      "split": "train",
+      "params": {
+        "company": "JPMorgan Chase & Co."
+      },
+      "claims": [
+        {
+          "key": "employee_count",
+          "expected": 318512,
+          "rule": "exact"
+        },
+        {
+          "key": "industry",
+          "expected": "banking and financial services",
+          "rule": "case_insensitive"
+        }
+      ],
+      "reference": {
+        "sourceName": "SEC EDGAR filing",
+        "sourceUrl": "https://www.sec.gov/Archives/edgar/data/19617/000162828026008131/jpm-20251231.htm",
+        "asOf": "2025-12-31",
+        "retrievedAt": "2026-11-27",
+        "synthetic": false,
+        "evidenceNote": "Global full-time and part-time employees; contractors excluded",
+        "industryLabelStatus": "curator-normalized from issuer business description; requires independent review",
+        "employeeCountStatus": "issuer-reported; see evidenceNote for scope and precision"
+      }
+    },
+    {
+      "id": "b2b-meta-platforms-inc",
+      "kind": "real_reference",
+      "split": "train",
+      "params": {
+        "company": "Meta Platforms, Inc."
+      },
+      "claims": [
+        {
+          "key": "employee_count",
+          "expected": 78865,
+          "rule": "exact"
+        },
+        {
+          "key": "industry",
+          "expected": "social media and digital advertising",
+          "rule": "case_insensitive"
+        }
+      ],
+      "reference": {
+        "sourceName": "SEC EDGAR filing",
+        "sourceUrl": "https://www.sec.gov/Archives/edgar/data/1326801/000162828026003942/meta-20251231.htm",
+        "asOf": "2025-12-31",
+        "retrievedAt": "2026-11-27",
+        "synthetic": false,
+        "evidenceNote": "Global workforce reported in 2025 Form 10-K",
+        "industryLabelStatus": "curator-normalized from issuer business description; requires independent review",
+        "employeeCountStatus": "issuer-reported; see evidenceNote for scope and precision"
+      }
+    },
+    {
+      "id": "b2b-netflix-inc",
+      "kind": "real_reference",
+      "split": "train",
+      "params": {
+        "company": "Netflix, Inc."
+      },
+      "claims": [
+        {
+          "key": "employee_count",
+          "expected": 16000,
+          "rule": "exact"
+        },
+        {
+          "key": "industry",
+          "expected": "subscription streaming entertainment",
+          "rule": "case_insensitive"
+        }
+      ],
+      "reference": {
+        "sourceName": "SEC EDGAR filing",
+        "sourceUrl": "https://www.sec.gov/Archives/edgar/data/1065280/000106528026000034/nflx-20251231.htm",
+        "asOf": "2025-12-31",
+        "retrievedAt": "2026-11-27",
+        "synthetic": false,
+        "evidenceNote": "Approximate full-time employees; excludes some fluctuating production workforce",
+        "industryLabelStatus": "curator-normalized from issuer business description; requires independent review",
+        "employeeCountStatus": "issuer-reported; see evidenceNote for scope and precision"
+      }
+    },
+    {
+      "id": "b2b-costco-wholesale-corporation",
+      "kind": "real_reference",
+      "split": "train",
+      "params": {
+        "company": "Costco Wholesale Corporation"
+      },
+      "claims": [
+        {
+          "key": "employee_count",
+          "expected": 341000,
+          "rule": "exact"
+        },
+        {
+          "key": "industry",
+          "expected": "warehouse retail",
+          "rule": "case_insensitive"
+        }
+      ],
+      "reference": {
+        "sourceName": "SEC EDGAR filing",
+        "sourceUrl": "https://www.sec.gov/Archives/edgar/data/909832/000090983225000101/cost-20250831.htm",
+        "asOf": "2025-08-31",
+        "retrievedAt": "2026-11-27",
+        "synthetic": false,
+        "evidenceNote": "Employees worldwide at end of FY2025",
+        "industryLabelStatus": "curator-normalized from issuer business description; requires independent review",
+        "employeeCountStatus": "issuer-reported; see evidenceNote for scope and precision"
+      }
+    },
+    {
+      "id": "b2b-salesforce-inc",
+      "kind": "real_reference",
+      "split": "train",
+      "params": {
+        "company": "Salesforce, Inc."
+      },
+      "claims": [
+        {
+          "key": "employee_count",
+          "expected": 83334,
+          "rule": "exact"
+        },
+        {
+          "key": "industry",
+          "expected": "customer relationship management software",
+          "rule": "case_insensitive"
+        }
+      ],
+      "reference": {
+        "sourceName": "SEC EDGAR filing",
+        "sourceUrl": "https://www.sec.gov/Archives/edgar/data/1108524/000110852426000060/crm-20260131.htm",
+        "asOf": "2026-01-31",
+        "retrievedAt": "2026-11-27",
+        "synthetic": false,
+        "evidenceNote": "Employees reported in FY2026 Form 10-K",
+        "industryLabelStatus": "curator-normalized from issuer business description; requires independent review",
+        "employeeCountStatus": "issuer-reported; see evidenceNote for scope and precision"
+      }
+    },
+    {
+      "id": "b2b-exxon-mobil-corporation",
+      "kind": "real_reference",
+      "split": "train",
+      "params": {
+        "company": "Exxon Mobil Corporation"
+      },
+      "claims": [
+        {
+          "key": "employee_count",
+          "expected": 57900,
+          "rule": "exact"
+        },
+        {
+          "key": "industry",
+          "expected": "oil and gas",
+          "rule": "case_insensitive"
+        }
+      ],
+      "reference": {
+        "sourceName": "SEC EDGAR filing",
+        "sourceUrl": "https://www.sec.gov/Archives/edgar/data/34088/000003408826000045/xom-20251231.htm",
+        "asOf": "2025-12-31",
+        "retrievedAt": "2026-11-27",
+        "synthetic": false,
+        "evidenceNote": "Regular employees, reported as 57.9 thousand",
+        "industryLabelStatus": "curator-normalized from issuer business description; requires independent review",
+        "employeeCountStatus": "issuer-reported; see evidenceNote for scope and precision"
+      }
+    },
+    {
+      "id": "b2b-visa-inc",
+      "kind": "real_reference",
+      "split": "train",
+      "params": {
+        "company": "Visa Inc."
+      },
+      "claims": [
+        {
+          "key": "employee_count",
+          "expected": 34100,
+          "rule": "exact"
+        },
+        {
+          "key": "industry",
+          "expected": "electronic payments network",
+          "rule": "case_insensitive"
+        }
+      ],
+      "reference": {
+        "sourceName": "SEC EDGAR filing",
+        "sourceUrl": "https://www.sec.gov/Archives/edgar/data/1403161/000140316125000089/v-20250930.htm",
+        "asOf": "2025-09-30",
+        "retrievedAt": "2026-11-27",
+        "synthetic": false,
+        "evidenceNote": "Approximate employees reported in FY2025 Form 10-K",
+        "industryLabelStatus": "curator-normalized from issuer business description; requires independent review",
+        "employeeCountStatus": "issuer-reported; see evidenceNote for scope and precision"
+      }
+    },
+    {
+      "id": "b2b-adobe-inc",
+      "kind": "real_reference",
+      "split": "train",
+      "params": {
+        "company": "Adobe Inc."
+      },
+      "claims": [
+        {
+          "key": "employee_count",
+          "expected": 31360,
+          "rule": "exact"
+        },
+        {
+          "key": "industry",
+          "expected": "digital media and creative software",
+          "rule": "case_insensitive"
+        }
+      ],
+      "reference": {
+        "sourceName": "SEC EDGAR filing",
+        "sourceUrl": "https://www.sec.gov/Archives/edgar/data/796343/000079634326000003/adbe-20251128.htm",
+        "asOf": "2025-11-28",
+        "retrievedAt": "2026-11-27",
+        "synthetic": false,
+        "evidenceNote": "Employees reported in FY2025 Form 10-K",
+        "industryLabelStatus": "curator-normalized from issuer business description; requires independent review",
+        "employeeCountStatus": "issuer-reported; see evidenceNote for scope and precision"
+      }
+    },
+    {
+      "id": "b2b-international-business-machines-corporation",
+      "kind": "real_reference",
+      "split": "train",
+      "params": {
+        "company": "International Business Machines Corporation"
+      },
+      "claims": [
+        {
+          "key": "employee_count",
+          "expected": 264300,
+          "rule": "exact"
+        },
+        {
+          "key": "industry",
+          "expected": "IT services, hybrid cloud and artificial intelligence",
+          "rule": "case_insensitive"
+        }
+      ],
+      "reference": {
+        "sourceName": "SEC EDGAR filing",
+        "sourceUrl": "https://www.sec.gov/Archives/edgar/data/51143/000005114326000027/ibmars2025.pdf",
+        "asOf": "2025-12-31",
+        "retrievedAt": "2026-11-27",
+        "synthetic": false,
+        "evidenceNote": "IBM and wholly owned subsidiaries; excludes separately reported less-than-wholly-owned and complementary workforce",
+        "industryLabelStatus": "curator-normalized from issuer business description; requires independent review",
+        "employeeCountStatus": "issuer-reported; see evidenceNote for scope and precision"
+      }
+    },
+    {
+      "id": "b2b-nvidia-corporation",
+      "kind": "real_reference",
+      "split": "train",
+      "params": {
+        "company": "NVIDIA Corporation"
+      },
+      "claims": [
+        {
+          "key": "employee_count",
+          "expected": 42000,
+          "rule": "exact"
+        },
+        {
+          "key": "industry",
+          "expected": "semiconductors and accelerated computing",
+          "rule": "case_insensitive"
+        }
+      ],
+      "reference": {
+        "sourceName": "SEC EDGAR filing",
+        "sourceUrl": "https://www.sec.gov/Archives/edgar/data/1045810/000104581026000021/nvda-20260125.htm",
+        "asOf": "2026-01-25",
+        "retrievedAt": "2026-11-27",
+        "synthetic": false,
+        "evidenceNote": "Approximate employees at fiscal year end",
+        "industryLabelStatus": "curator-normalized from issuer business description; requires independent review",
+        "employeeCountStatus": "issuer-reported; see evidenceNote for scope and precision"
+      }
+    },
+    {
+      "id": "b2b-intel-corporation",
+      "kind": "real_reference",
+      "split": "train",
+      "params": {
+        "company": "Intel Corporation"
+      },
+      "claims": [
+        {
+          "key": "employee_count",
+          "expected": 85100,
+          "rule": "exact"
+        },
+        {
+          "key": "industry",
+          "expected": "semiconductors and chip manufacturing",
+          "rule": "case_insensitive"
+        }
+      ],
+      "reference": {
+        "sourceName": "SEC EDGAR filing",
+        "sourceUrl": "https://www.sec.gov/Archives/edgar/data/50863/000005086326000009/q425earningsrelease.htm",
+        "asOf": "2025-12-27",
+        "retrievedAt": "2026-11-27",
+        "synthetic": false,
+        "evidenceNote": "Total Intel employees in thousands, including Mobileye and other subsidiaries",
+        "industryLabelStatus": "curator-normalized from issuer business description; requires independent review",
+        "employeeCountStatus": "issuer-reported; see evidenceNote for scope and precision"
+      }
+    },
+    {
+      "id": "b2b-tesla-inc",
+      "kind": "real_reference",
+      "split": "train",
+      "params": {
+        "company": "Tesla, Inc."
+      },
+      "claims": [
+        {
+          "key": "employee_count",
+          "expected": 134785,
+          "rule": "exact"
+        },
+        {
+          "key": "industry",
+          "expected": "electric vehicles and energy storage",
+          "rule": "case_insensitive"
+        }
+      ],
+      "reference": {
+        "sourceName": "SEC EDGAR filing",
+        "sourceUrl": "https://www.sec.gov/Archives/edgar/data/1318605/000162828026003952/tsla-20251231.htm",
+        "asOf": "2025-12-31",
+        "retrievedAt": "2026-11-27",
+        "synthetic": false,
+        "evidenceNote": "Worldwide employee headcount reported in 2025 Form 10-K",
+        "industryLabelStatus": "curator-normalized from issuer business description; requires independent review",
+        "employeeCountStatus": "issuer-reported; see evidenceNote for scope and precision"
+      }
+    }
+  ]
+}

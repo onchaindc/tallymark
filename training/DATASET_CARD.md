@@ -1,9 +1,11 @@
-# Corporate registry preference dataset
+# Legacy corporate registry preference dataset
+
+> **Not an adapter-training target.** The official catalogue classifies `CORPORATE_REGISTRY_LOOKUP` as deterministic and comparator-only. These records may support comparator/evaluator benchmarking, but must not be used to train or register a LoRA Evaluator adapter. The current Hybrid adapter track is `B2B_IDENTITY_ENRICHMENT`; see `training/B2B_DATASET_CARD.md` and `notebooks/tallymark_b2b_identity_training.ipynb`.
 
 ## Scope
 
 - Intent: `CORPORATE_REGISTRY_LOOKUP_GENERAL`
-- Class: judgment
+- Class: deterministic (comparator-only; no Evaluator adapter)
 - Source benchmark: `benchmarks/real/corporate-registry-v2.json`
 - Records: 19 real-reference entities (15 Companies House GB, 4 SEC EDGAR US)
 - Pair construction: each negative changes exactly one field (legal name, registration identifier, or active indicator) using a donor from the same jurisdiction. The generator omits a field comparison when no valid same-jurisdiction donor differs on that field.

@@ -1,0 +1,97 @@
+{
+  "id": "b2b-identity-enrichment-heldout-v1",
+  "intent": "B2B_IDENTITY_ENRICHMENT_GENERAL",
+  "split": "held_out",
+  "cases": [
+    {
+      "id": "b2b-apple-inc",
+      "kind": "real_reference",
+      "split": "held_out",
+      "params": {
+        "company": "Apple Inc."
+      },
+      "claims": [
+        {
+          "key": "employee_count",
+          "expected": 167000,
+          "rule": "exact"
+        },
+        {
+          "key": "industry",
+          "expected": "consumer electronics and digital services",
+          "rule": "case_insensitive"
+        }
+      ],
+      "reference": {
+        "sourceName": "SEC EDGAR filing",
+        "sourceUrl": "https://www.sec.gov/Archives/edgar/data/320193/000032019326000026/aapl-20260926.htm",
+        "asOf": "2026-09-26",
+        "retrievedAt": "2026-11-27",
+        "synthetic": false,
+        "evidenceNote": "Approximate full-time equivalent employees",
+        "industryLabelStatus": "curator-normalized from issuer business description; requires independent review",
+        "employeeCountStatus": "issuer-reported; see evidenceNote for scope and precision"
+      }
+    },
+    {
+      "id": "b2b-walmart-inc",
+      "kind": "real_reference",
+      "split": "held_out",
+      "params": {
+        "company": "Walmart Inc."
+      },
+      "claims": [
+        {
+          "key": "employee_count",
+          "expected": 2100000,
+          "rule": "exact"
+        },
+        {
+          "key": "industry",
+          "expected": "general merchandise retail",
+          "rule": "case_insensitive"
+        }
+      ],
+      "reference": {
+        "sourceName": "SEC EDGAR filing",
+        "sourceUrl": "https://www.sec.gov/Archives/edgar/data/104169/000010416926000055/wmt-20260131.htm",
+        "asOf": "2026-01-31",
+        "retrievedAt": "2026-11-27",
+        "synthetic": false,
+        "evidenceNote": "Approximately 2.1 million associates worldwide",
+        "industryLabelStatus": "curator-normalized from issuer business description; requires independent review",
+        "employeeCountStatus": "issuer-reported; see evidenceNote for scope and precision"
+      }
+    },
+    {
+      "id": "b2b-berkshire-hathaway-inc",
+      "kind": "real_reference",
+      "split": "held_out",
+      "params": {
+        "company": "Berkshire Hathaway Inc."
+      },
+      "claims": [
+        {
+          "key": "employee_count",
+          "expected": 387800,
+          "rule": "exact"
+        },
+        {
+          "key": "industry",
+          "expected": "diversified holding company",
+          "rule": "case_insensitive"
+        }
+      ],
+      "reference": {
+        "sourceName": "SEC EDGAR filing",
+        "sourceUrl": "https://www.sec.gov/Archives/edgar/data/1067983/000119312526083899/brka-20251231.htm",
+        "asOf": "2025-12-31",
+        "retrievedAt": "2026-11-27",
+        "synthetic": false,
+        "evidenceNote": "Approximate employees across Berkshire and operating subsidiaries",
+        "industryLabelStatus": "curator-normalized from issuer business description; requires independent review",
+        "employeeCountStatus": "issuer-reported; see evidenceNote for scope and precision"
+      }
+    }
+  ]
+}

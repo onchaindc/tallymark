@@ -3,12 +3,14 @@ on:
   push:
     paths:
       - "training/**"
-      - "benchmarks/real/corporate-registry-v2.json"
+      - "benchmarks/real/b2b-identity-enrichment-v1.json"
+      - "benchmarks/heldout/b2b-identity-enrichment-v1.json"
       - ".github/workflows/evaluator-data-check.yml"
   pull_request:
     paths:
       - "training/**"
-      - "benchmarks/real/corporate-registry-v2.json"
+      - "benchmarks/real/b2b-identity-enrichment-v1.json"
+      - "benchmarks/heldout/b2b-identity-enrichment-v1.json"
       - ".github/workflows/evaluator-data-check.yml"
   workflow_dispatch:
 
@@ -22,14 +24,18 @@ jobs:
           python-version: "3.11"
       - name: Install gate dependency
         run: python -m pip install numpy
+      - name: Build B2B preference pairs
+        run: python training/build_b2b_preference_pairs.py
+      - name: Run held-out entity separation test
+        run: node --test test/b2b-heldout.test.js
       - name: Fetch pinned Telegraph adapter kit
         run: |
           git clone https://github.com/telegraphprotocol/telegraph-wasm-baseline.git
           git -C telegraph-wasm-baseline checkout 1ed063e2f0066cfaf0e124d66ec6a17b7a6121fd
-      - name: Run official dataset gate
+      - name: Run official B2B dataset gate
         working-directory: telegraph-wasm-baseline
         run: |
           python -m float_runtime.train_adapter \
-            --intent CORPORATE_REGISTRY_LOOKUP_GENERAL \
-            --data "$GITHUB_WORKSPACE/training/corporate-registry-pairs.jsonl" \
+            --intent B2B_IDENTITY_ENRICHMENT_GENERAL \
+            --data "$GITHUB_WORKSPACE/training/b2b-identity-enrichment-pairs.jsonl" \
             --check-data

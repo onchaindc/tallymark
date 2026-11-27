@@ -1,5 +1,14 @@
 # TALLYMARK — Evaluator-track submission package
 
+## Intent correction — 27 November 2026
+
+The previous `CORPORATE_REGISTRY_LOOKUP_GENERAL` preference corpus is legacy material only. The canonical `CORPORATE_REGISTRY_LOOKUP` intent is deterministic and comparator-only, so its LoRA training experiment is not a valid protocol Evaluator adapter and must not be submitted or registered.
+
+The current Hybrid adapter target is `B2B_IDENTITY_ENRICHMENT` (serving child: `B2B_IDENTITY_ENRICHMENT_GENERAL`). Its scored fields are `employee_count` and `industry`, with `company` as the input. The new candidate dataset, held-out set, generator, and Kaggle notebook are documented in `training/B2B_DATASET_CARD.md` and `notebooks/tallymark_b2b_identity_training.ipynb`.
+
+The B2B corpus is a candidate pilot: generated preference pairs have unverified LLM provenance, workforce definitions vary by issuer, and industry labels require independent review. No valid B2B adapter has yet passed training, export, packaging, hosted-executor, or protocol verification.
+
+
 ## Submission type
 
 **Evaluation material and independent evaluation tooling.** This package does not claim to be a trained or registered on-protocol judgment Evaluator adapter.
